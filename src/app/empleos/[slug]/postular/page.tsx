@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useState, useCallback, use } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,13 @@ import {
   Briefcase,
   MapPin,
 } from "lucide-react";
+import {
+  obtenerVacantePorSlug,
+  crearCandidato,
+  crearPostulacion,
+} from "@/lib/supabase";
+import { subirArchivo } from "@/lib/storage";
+import type { Vacante } from "@/lib/supabase";
 
 // Schema de validación con Zod
 const postulacionSchema = z.object({
@@ -48,38 +55,36 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-const vacantesInfo: Record<string, { titulo: string; ubicacion: string }> = {
-  "maestro-panadero": {
-    titulo: "Maestro Panadero",
-    ubicacion: "Sucursal Centro",
-  },
-  "cajero-sucursal": {
-    titulo: "Cajero/a de Sucursal",
-    ubicacion: "Varias Sucursales",
-  },
-  "ayudante-de-pasteleria": {
-    titulo: "Ayudante de Pastelería",
-    ubicacion: "Sucursal Norte",
-  },
-  "vendedor-mostrador": {
-    titulo: "Vendedor/a de Mostrador",
-    ubicacion: "Sucursal Sur",
-  },
-  "supervisor-de-produccion": {
-    titulo: "Supervisor de Producción",
-    ubicacion: "Planta Central",
-  },
-  repartidor: { titulo: "Repartidor", ubicacion: "Zona Metropolitana" },
-};
-
 export default function PostularPage({ params }: PageProps) {
   const router = useRouter();
-  const { slug } = use(params);
-  const vacante = vacantesInfo[slug];
-
+  const [slug, setSlug] = useState<string>("");
+  const [vacante, setVacante] = useState<Vacante | null>(null);
+  const [loading, setLoading] = useState(true);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    params.then((p) => setSlug(p.slug));
+  }, [params]);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    const cargarVacante = async () => {
+      try {
+        setLoading(true);
+        const data = await obtenerVacantePorSlug(slug);
+        setVacante(data);
+      } catch (error) {
+        console.error("Error al cargar vacante:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarVacante();
+  }, [slug]);
 
   const {
     register,
@@ -126,35 +131,71 @@ export default function PostularPage({ params }: PageProps) {
       return;
     }
 
+    if (!vacante) {
+      setSubmitError("Error: Vacante no encontrada");
+      return;
+    }
+
     setSubmitError(null);
     setUploading(true);
 
     try {
-      // Simular envío a API
-      // En producción, aquí harías el POST a tu API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // 1. Subir CV a Supabase Storage
+      const cvUrl = await subirArchivo(cvFile, "cvs");
 
-      // Generar ID de postulación (en producción vendría del backend)
-      const postulacionId = Math.random().toString(36).substring(7);
+      // 2. Crear candidato
+      const candidato = await crearCandidato({
+        nombre: data.nombre,
+        apellidos: data.apellidos,
+        email: data.email,
+        telefono: data.telefono,
+        ciudad: data.ciudad,
+        experiencia: data.experiencia,
+        cv_url: cvUrl,
+        habilidades: [],
+      });
 
-      // Redirigir a confirmación
-      router.push(`/postulacion/${postulacionId}/confirmacion`);
-    } catch (error) {
+      // 3. Crear postulación vinculando candidato con vacante
+      const postulacion = await crearPostulacion({
+        candidato_id: candidato.id,
+        vacante_id: vacante.id,
+        cv_url: cvUrl,
+      });
+
+      // 4. Redirigir a página de confirmación
+      router.push(`/empleos/confirmacion?postulacion=${postulacion.id}`);
+    } catch (error: any) {
+      console.error("Error al enviar postulación:", error);
       setSubmitError(
-        "Hubo un error al enviar tu postulación. Inténtalo de nuevo."
+        error.message ||
+          "Hubo un error al enviar tu postulación. Inténtalo de nuevo."
       );
       setUploading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 via-amber-50/50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 text-amber-600 animate-spin mx-auto mb-4" />
+          <p className="text-amber-700 text-lg">Cargando formulario...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!vacante) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 via-amber-50/50 to-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-amber-950 mb-4">
             Vacante no encontrada
           </h1>
-          <Link href="/empleos" className="text-amber-600 hover:text-amber-700">
+          <Link
+            href="/empleos"
+            className="text-amber-600 hover:text-amber-700 underline"
+          >
             Volver a vacantes
           </Link>
         </div>
@@ -213,6 +254,9 @@ export default function PostularPage({ params }: PageProps) {
             {vacante.titulo}
           </h1>
           <p className="text-lg text-amber-700">{vacante.ubicacion}</p>
+          <p className="text-sm text-amber-600 mt-2">
+            {vacante.tipo} • {vacante.categoria}
+          </p>
         </motion.div>
 
         {/* Form Card */}
