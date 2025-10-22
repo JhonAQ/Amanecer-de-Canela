@@ -64,7 +64,7 @@ export default function EmpleosPage() {
     "Gerencial",
     "Administrativo",
   ];
-  
+
   const tipos = ["Todos", "Tiempo Completo", "Medio Tiempo", "Por Proyecto"];
 
   return (
@@ -125,7 +125,9 @@ export default function EmpleosPage() {
           >
             <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-full mb-6 text-sm font-medium backdrop-blur-sm border border-white/30">
               <Briefcase className="w-4 h-4" />
-              {loading ? "Cargando..." : `${vacantes.length} vacantes disponibles`}
+              {loading
+                ? "Cargando..."
+                : `${vacantes.length} vacantes disponibles`}
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
               Encuentra tu lugar perfecto
@@ -252,7 +254,9 @@ export default function EmpleosPage() {
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-1 text-sm text-amber-700">
                           <MapPin className="w-4 h-4 flex-shrink-0" />
-                          <span className="line-clamp-1">{vacante.ubicacion}</span>
+                          <span className="line-clamp-1">
+                            {vacante.ubicacion}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1 text-sm text-amber-700">
                           <Clock className="w-4 h-4 flex-shrink-0" />
@@ -269,7 +273,8 @@ export default function EmpleosPage() {
                           Salario
                         </p>
                         <p className="text-sm font-bold text-amber-900 mb-3">
-                          ${vacante.salario_min?.toLocaleString("es-MX")} - ${vacante.salario_max?.toLocaleString("es-MX")}
+                          ${vacante.salario_min?.toLocaleString("es-MX")} - $
+                          {vacante.salario_max?.toLocaleString("es-MX")}
                         </p>
 
                         <div className="flex items-center gap-2 text-amber-600 font-medium text-sm group-hover:text-amber-700 transition-colors">

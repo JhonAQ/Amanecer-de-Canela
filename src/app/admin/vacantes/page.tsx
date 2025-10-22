@@ -20,12 +20,12 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
-import { 
-  obtenerVacantes, 
-  crearVacante, 
-  actualizarVacante, 
+import {
+  obtenerVacantes,
+  crearVacante,
+  actualizarVacante,
   eliminarVacante,
-  type Vacante 
+  type Vacante,
 } from "@/lib/supabase";
 
 export default function VacantesPage() {
@@ -115,19 +115,19 @@ export default function VacantesPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      
+
       // Generar slug desde el título
       const titulo = formData.get("titulo") as string;
       const slug = titulo
         .toLowerCase()
-        .replace(/[áàäâ]/g, 'a')
-        .replace(/[éèëê]/g, 'e')
-        .replace(/[íìïî]/g, 'i')
-        .replace(/[óòöô]/g, 'o')
-        .replace(/[úùüû]/g, 'u')
-        .replace(/ñ/g, 'n')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[áàäâ]/g, "a")
+        .replace(/[éèëê]/g, "e")
+        .replace(/[íìïî]/g, "i")
+        .replace(/[óòöô]/g, "o")
+        .replace(/[úùüû]/g, "u")
+        .replace(/ñ/g, "n")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
 
       // Procesar arrays (responsabilidades, requisitos, ofrecemos)
       const responsabilidadesText = formData.get("responsabilidades") as string;
@@ -136,18 +136,18 @@ export default function VacantesPage() {
 
       const responsabilidades = responsabilidadesText
         .split("\n")
-        .map(r => r.trim())
-        .filter(r => r.length > 0);
-      
+        .map((r) => r.trim())
+        .filter((r) => r.length > 0);
+
       const requisitos = requisitosText
         .split("\n")
-        .map(r => r.trim())
-        .filter(r => r.length > 0);
-      
+        .map((r) => r.trim())
+        .filter((r) => r.length > 0);
+
       const ofrecemos = ofrecemosText
         .split("\n")
-        .map(r => r.trim())
-        .filter(r => r.length > 0);
+        .map((r) => r.trim())
+        .filter((r) => r.length > 0);
 
       const vacanteData = {
         slug,
@@ -162,7 +162,9 @@ export default function VacantesPage() {
         requisitos,
         ofrecemos,
         estado: formData.get("estado") as any,
-        vacantes_disponibles: parseInt(formData.get("vacantes_disponibles") as string),
+        vacantes_disponibles: parseInt(
+          formData.get("vacantes_disponibles") as string
+        ),
         fecha_publicacion: new Date().toISOString(),
         vistas: 0,
       };
@@ -181,7 +183,9 @@ export default function VacantesPage() {
       await cargarVacantes(); // Recargar lista
     } catch (error) {
       console.error("Error al guardar vacante:", error);
-      alert("Error al guardar la vacante. Verifica los datos e intenta de nuevo.");
+      alert(
+        "Error al guardar la vacante. Verifica los datos e intenta de nuevo."
+      );
     } finally {
       setSaving(false);
     }
@@ -297,130 +301,133 @@ export default function VacantesPage() {
         ) : (
           // Vacantes list
           vacantesFiltradas.map((vacante, index) => (
-          <motion.div
-            key={vacante.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="bg-white rounded-2xl border border-amber-100 shadow-md hover:shadow-xl transition-all overflow-hidden"
-          >
-            <div className="p-6">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                {/* Left Section */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-xl font-bold text-amber-950 mb-1">
-                        {vacante.titulo}
-                      </h3>
-                      <div className="flex flex-wrap items-center gap-3 text-sm text-amber-600">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4" />
-                          {vacante.ubicacion}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <DollarSign className="w-4 h-4" />
-                          ${vacante.salario_min.toLocaleString()} - ${vacante.salario_max.toLocaleString()}
-                        </span>
-                        <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
-                          {vacante.categoria}
-                        </span>
-                        <span className="px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-xs font-medium">
-                          {vacante.tipo}
-                        </span>
+            <motion.div
+              key={vacante.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="bg-white rounded-2xl border border-amber-100 shadow-md hover:shadow-xl transition-all overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  {/* Left Section */}
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="text-xl font-bold text-amber-950 mb-1">
+                          {vacante.titulo}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-amber-600">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-4 h-4" />
+                            {vacante.ubicacion}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="w-4 h-4" />$
+                            {vacante.salario_min.toLocaleString()} - $
+                            {vacante.salario_max.toLocaleString()}
+                          </span>
+                          <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
+                            {vacante.categoria}
+                          </span>
+                          <span className="px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-xs font-medium">
+                            {vacante.tipo}
+                          </span>
+                        </div>
+                      </div>
+                      <span
+                        className={`px-4 py-1.5 rounded-full text-sm font-medium border ${
+                          estadoColors[vacante.estado]
+                        }`}
+                      >
+                        {vacante.estado}
+                      </span>
+                    </div>
+
+                    <p className="text-amber-700 text-sm mb-4 line-clamp-2">
+                      {vacante.descripcion}
+                    </p>
+
+                    {/* Metrics */}
+                    <div className="flex flex-wrap items-center gap-6 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <Eye className="w-4 h-4 text-purple-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-amber-600">Vistas</p>
+                          <p className="font-bold text-amber-950">
+                            {vacante.vistas || 0}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                          <Users className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-amber-600">Puestos</p>
+                          <p className="font-bold text-amber-950">
+                            {vacante.vacantes_disponibles}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-amber-600" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-amber-600">Publicada</p>
+                          <p className="font-bold text-amber-950">
+                            {new Date(
+                              vacante.fecha_publicacion
+                            ).toLocaleDateString("es-MX", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <span
-                      className={`px-4 py-1.5 rounded-full text-sm font-medium border ${
-                        estadoColors[vacante.estado]
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex lg:flex-col gap-2">
+                    <button
+                      onClick={() =>
+                        handleToggleEstado(vacante.id, vacante.estado)
+                      }
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                        vacante.estado === "Activa"
+                          ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+                          : "bg-green-100 text-green-700 hover:bg-green-200"
                       }`}
                     >
-                      {vacante.estado}
-                    </span>
+                      {vacante.estado === "Activa" ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                      {vacante.estado === "Activa" ? "Pausar" : "Activar"}
+                    </button>
+                    <button
+                      onClick={() => handleEditVacante(vacante)}
+                      className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg font-medium text-sm transition-all"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDeleteVacante(vacante.id)}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg font-medium text-sm transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Eliminar
+                    </button>
                   </div>
-
-                  <p className="text-amber-700 text-sm mb-4 line-clamp-2">
-                    {vacante.descripcion}
-                  </p>
-
-                  {/* Metrics */}
-                  <div className="flex flex-wrap items-center gap-6 text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Eye className="w-4 h-4 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-amber-600">Vistas</p>
-                        <p className="font-bold text-amber-950">
-                          {vacante.vistas || 0}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Users className="w-4 h-4 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-amber-600">Puestos</p>
-                        <p className="font-bold text-amber-950">
-                          {vacante.vacantes_disponibles}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-amber-600">Publicada</p>
-                        <p className="font-bold text-amber-950">
-                          {new Date(
-                            vacante.fecha_publicacion
-                          ).toLocaleDateString("es-MX", {
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex lg:flex-col gap-2">
-                  <button
-                    onClick={() => handleToggleEstado(vacante.id, vacante.estado)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                      vacante.estado === "Activa"
-                        ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                        : "bg-green-100 text-green-700 hover:bg-green-200"
-                    }`}
-                  >
-                    {vacante.estado === "Activa" ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                    {vacante.estado === "Activa" ? "Pausar" : "Activar"}
-                  </button>
-                  <button
-                    onClick={() => handleEditVacante(vacante)}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg font-medium text-sm transition-all"
-                  >
-                    <Edit className="w-4 h-4" />
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDeleteVacante(vacante.id)}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg font-medium text-sm transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Eliminar
-                  </button>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
           ))
         )}
       </div>
@@ -527,7 +534,9 @@ export default function VacantesPage() {
                       <input
                         type="number"
                         name="vacantes_disponibles"
-                        defaultValue={selectedVacante?.vacantes_disponibles || 1}
+                        defaultValue={
+                          selectedVacante?.vacantes_disponibles || 1
+                        }
                         min="1"
                         required
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
@@ -663,7 +672,9 @@ export default function VacantesPage() {
                       ) : (
                         <>
                           <Check className="w-5 h-5" />
-                          {selectedVacante ? "Actualizar Vacante" : "Crear Vacante"}
+                          {selectedVacante
+                            ? "Actualizar Vacante"
+                            : "Crear Vacante"}
                         </>
                       )}
                     </button>
