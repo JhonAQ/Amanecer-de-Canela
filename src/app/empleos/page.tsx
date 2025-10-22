@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { 
+import {
   Search,
   MapPin,
   Clock,
@@ -15,7 +15,7 @@ import {
   Croissant,
   ChefHat,
   ShoppingBag,
-  Wallet
+  Wallet,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -29,10 +29,11 @@ const vacantes = [
     tipo: "Tiempo Completo",
     categoria: "Producción",
     salario: "$15,000 - $20,000 MXN",
-    descripcion: "Buscamos un maestro panadero con experiencia en elaboración de pan artesanal y productos de panadería tradicional.",
+    descripcion:
+      "Buscamos un maestro panadero con experiencia en elaboración de pan artesanal y productos de panadería tradicional.",
     icon: ChefHat,
     color: "from-amber-600 to-amber-700",
-    destacada: true
+    destacada: true,
   },
   {
     id: 2,
@@ -42,10 +43,11 @@ const vacantes = [
     tipo: "Tiempo Completo",
     categoria: "Ventas",
     salario: "$10,000 - $12,000 MXN",
-    descripcion: "Buscamos personas con actitud de servicio para atención al cliente y manejo de caja en nuestras sucursales.",
+    descripcion:
+      "Buscamos personas con actitud de servicio para atención al cliente y manejo de caja en nuestras sucursales.",
     icon: Wallet,
     color: "from-stone-600 to-stone-700",
-    destacada: false
+    destacada: false,
   },
   {
     id: 3,
@@ -55,10 +57,11 @@ const vacantes = [
     tipo: "Medio Tiempo",
     categoria: "Producción",
     salario: "$8,000 - $10,000 MXN",
-    descripcion: "Únete a nuestro equipo de pastelería y aprende el arte de crear dulces momentos.",
+    descripcion:
+      "Únete a nuestro equipo de pastelería y aprende el arte de crear dulces momentos.",
     icon: Croissant,
     color: "from-yellow-700 to-amber-700",
-    destacada: false
+    destacada: false,
   },
   {
     id: 4,
@@ -68,10 +71,11 @@ const vacantes = [
     tipo: "Tiempo Completo",
     categoria: "Ventas",
     salario: "$9,000 - $11,000 MXN",
-    descripcion: "Buscamos personas apasionadas por el servicio al cliente para nuestro equipo de ventas.",
+    descripcion:
+      "Buscamos personas apasionadas por el servicio al cliente para nuestro equipo de ventas.",
     icon: ShoppingBag,
     color: "from-amber-500 to-yellow-600",
-    destacada: false
+    destacada: false,
   },
   {
     id: 5,
@@ -81,10 +85,11 @@ const vacantes = [
     tipo: "Tiempo Completo",
     categoria: "Supervisión",
     salario: "$18,000 - $22,000 MXN",
-    descripcion: "Buscamos líder con experiencia en gestión de equipos de producción en la industria alimentaria.",
+    descripcion:
+      "Buscamos líder con experiencia en gestión de equipos de producción en la industria alimentaria.",
     icon: Users,
     color: "from-amber-700 to-yellow-800",
-    destacada: true
+    destacada: true,
   },
   {
     id: 6,
@@ -94,14 +99,21 @@ const vacantes = [
     tipo: "Tiempo Completo",
     categoria: "Logística",
     salario: "$11,000 - $14,000 MXN",
-    descripcion: "Únete a nuestro equipo de distribución y lleva la frescura de nuestros productos a cada rincón.",
+    descripcion:
+      "Únete a nuestro equipo de distribución y lleva la frescura de nuestros productos a cada rincón.",
     icon: TrendingUp,
     color: "from-stone-500 to-amber-600",
-    destacada: false
-  }
+    destacada: false,
+  },
 ];
 
-const categorias = ["Todas", "Producción", "Ventas", "Supervisión", "Logística"];
+const categorias = [
+  "Todas",
+  "Producción",
+  "Ventas",
+  "Supervisión",
+  "Logística",
+];
 const tipos = ["Todos", "Tiempo Completo", "Medio Tiempo"];
 
 export default function EmpleosPage() {
@@ -111,24 +123,31 @@ export default function EmpleosPage() {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
   // Filtrar vacantes
-  const vacantesFiltradas = vacantes.filter(vacante => {
-    const coincideBusqueda = vacante.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-                             vacante.ubicacion.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideCategoria = categoriaSeleccionada === "Todas" || vacante.categoria === categoriaSeleccionada;
-    const coincideTipo = tipoSeleccionado === "Todos" || vacante.tipo === tipoSeleccionado;
-    
+  const vacantesFiltradas = vacantes.filter((vacante) => {
+    const coincideBusqueda =
+      vacante.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
+      vacante.ubicacion.toLowerCase().includes(busqueda.toLowerCase());
+    const coincideCategoria =
+      categoriaSeleccionada === "Todas" ||
+      vacante.categoria === categoriaSeleccionada;
+    const coincideTipo =
+      tipoSeleccionado === "Todos" || vacante.tipo === tipoSeleccionado;
+
     return coincideBusqueda && coincideCategoria && coincideTipo;
   });
 
-  const vacantesDestacadas = vacantesFiltradas.filter(v => v.destacada);
-  const vacantesNormales = vacantesFiltradas.filter(v => !v.destacada);
+  const vacantesDestacadas = vacantesFiltradas.filter((v) => v.destacada);
+  const vacantesNormales = vacantesFiltradas.filter((v) => !v.destacada);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 via-amber-50/50 to-white">
       {/* Header/Navbar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
             <Image
               src="/logo.png"
               alt="Amanecer de Canela"
@@ -138,12 +157,14 @@ export default function EmpleosPage() {
               priority
             />
             <div>
-              <h1 className="text-xl font-bold text-amber-900">Amanecer de Canela</h1>
+              <h1 className="text-xl font-bold text-amber-900">
+                Amanecer de Canela
+              </h1>
               <p className="text-xs text-amber-700">Únete a nuestro equipo</p>
             </div>
           </Link>
-          
-          <Link 
+
+          <Link
             href="/"
             className="px-6 py-2.5 text-amber-700 hover:text-amber-900 font-medium transition-colors"
           >
@@ -196,8 +217,10 @@ export default function EmpleosPage() {
           transition={{ delay: 0.2 }}
           className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-amber-100"
         >
-          <h3 className="text-2xl font-bold text-amber-950 mb-6">Busca tu oportunidad ideal</h3>
-          
+          <h3 className="text-2xl font-bold text-amber-950 mb-6">
+            Busca tu oportunidad ideal
+          </h3>
+
           {/* Search Bar */}
           <div className="flex flex-col lg:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
@@ -210,7 +233,7 @@ export default function EmpleosPage() {
                 className="w-full pl-12 pr-4 py-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors"
               />
             </div>
-            
+
             <button
               onClick={() => setMostrarFiltros(!mostrarFiltros)}
               className="lg:hidden flex items-center gap-2 px-6 py-3 bg-amber-100 text-amber-700 rounded-xl font-medium hover:bg-amber-200 transition-colors"
@@ -221,7 +244,11 @@ export default function EmpleosPage() {
           </div>
 
           {/* Filters */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 ${mostrarFiltros ? 'block' : 'hidden lg:grid'}`}>
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 ${
+              mostrarFiltros ? "block" : "hidden lg:grid"
+            }`}
+          >
             <div>
               <label className="block text-sm font-medium text-amber-900 mb-2">
                 Categoría
@@ -231,8 +258,10 @@ export default function EmpleosPage() {
                 onChange={(e) => setCategoriaSeleccionada(e.target.value)}
                 className="w-full px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors bg-white"
               >
-                {categorias.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {categorias.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
                 ))}
               </select>
             </div>
@@ -246,8 +275,10 @@ export default function EmpleosPage() {
                 onChange={(e) => setTipoSeleccionado(e.target.value)}
                 className="w-full px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors bg-white"
               >
-                {tipos.map(tipo => (
-                  <option key={tipo} value={tipo}>{tipo}</option>
+                {tipos.map((tipo) => (
+                  <option key={tipo} value={tipo}>
+                    {tipo}
+                  </option>
                 ))}
               </select>
             </div>
@@ -256,7 +287,9 @@ export default function EmpleosPage() {
           {/* Results count */}
           <div className="mt-4 pt-4 border-t border-amber-100">
             <p className="text-sm text-amber-700">
-              Mostrando <span className="font-semibold">{vacantesFiltradas.length}</span> {vacantesFiltradas.length === 1 ? 'vacante' : 'vacantes'}
+              Mostrando{" "}
+              <span className="font-semibold">{vacantesFiltradas.length}</span>{" "}
+              {vacantesFiltradas.length === 1 ? "vacante" : "vacantes"}
             </p>
           </div>
         </motion.div>
@@ -269,7 +302,9 @@ export default function EmpleosPage() {
           <div className="mb-12">
             <div className="flex items-center gap-2 mb-6">
               <div className="w-1 h-8 bg-gradient-to-b from-amber-500 to-orange-500 rounded-full"></div>
-              <h3 className="text-2xl font-bold text-amber-950">Vacantes Destacadas</h3>
+              <h3 className="text-2xl font-bold text-amber-950">
+                Vacantes Destacadas
+              </h3>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -292,11 +327,15 @@ export default function EmpleosPage() {
                         </div>
 
                         {/* Gradient header */}
-                        <div className={`h-2 bg-gradient-to-r ${vacante.color}`}></div>
+                        <div
+                          className={`h-2 bg-gradient-to-r ${vacante.color}`}
+                        ></div>
 
                         <div className="p-6">
                           <div className="flex items-start gap-4 mb-4">
-                            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${vacante.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                            <div
+                              className={`w-14 h-14 rounded-xl bg-gradient-to-br ${vacante.color} flex items-center justify-center flex-shrink-0 shadow-lg`}
+                            >
                               <Icon className="w-7 h-7 text-white" />
                             </div>
                             <div className="flex-1">
@@ -322,8 +361,12 @@ export default function EmpleosPage() {
 
                           <div className="flex items-center justify-between pt-4 border-t border-amber-100">
                             <div>
-                              <p className="text-xs text-amber-600 font-medium">Salario</p>
-                              <p className="text-sm font-bold text-amber-900">{vacante.salario}</p>
+                              <p className="text-xs text-amber-600 font-medium">
+                                Salario
+                              </p>
+                              <p className="text-sm font-bold text-amber-900">
+                                {vacante.salario}
+                              </p>
                             </div>
                             <div className="flex items-center gap-2 text-amber-600 font-medium group-hover:text-amber-700 transition-colors">
                               Ver detalles
@@ -345,7 +388,9 @@ export default function EmpleosPage() {
           <div>
             <div className="flex items-center gap-2 mb-6">
               <div className="w-1 h-8 bg-gradient-to-b from-amber-400 to-orange-400 rounded-full"></div>
-              <h3 className="text-2xl font-bold text-amber-950">Todas las Vacantes</h3>
+              <h3 className="text-2xl font-bold text-amber-950">
+                Todas las Vacantes
+              </h3>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -361,11 +406,15 @@ export default function EmpleosPage() {
                   >
                     <Link href={`/empleos/${vacante.slug}`}>
                       <div className="group bg-white rounded-xl overflow-hidden border border-amber-200 hover:border-amber-400 transition-all shadow-sm hover:shadow-lg h-full">
-                        <div className={`h-1.5 bg-gradient-to-r ${vacante.color}`}></div>
+                        <div
+                          className={`h-1.5 bg-gradient-to-r ${vacante.color}`}
+                        ></div>
 
                         <div className="p-5">
                           <div className="flex items-center gap-3 mb-3">
-                            <div className={`w-11 h-11 rounded-lg bg-gradient-to-br ${vacante.color} flex items-center justify-center flex-shrink-0`}>
+                            <div
+                              className={`w-11 h-11 rounded-lg bg-gradient-to-br ${vacante.color} flex items-center justify-center flex-shrink-0`}
+                            >
                               <Icon className="w-6 h-6 text-white" />
                             </div>
                             <h4 className="text-lg font-bold text-amber-950 group-hover:text-amber-700 transition-colors line-clamp-1">
@@ -376,7 +425,9 @@ export default function EmpleosPage() {
                           <div className="space-y-2 mb-4">
                             <div className="flex items-center gap-1 text-sm text-amber-700">
                               <MapPin className="w-4 h-4 flex-shrink-0" />
-                              <span className="line-clamp-1">{vacante.ubicacion}</span>
+                              <span className="line-clamp-1">
+                                {vacante.ubicacion}
+                              </span>
                             </div>
                             <div className="flex items-center gap-1 text-sm text-amber-700">
                               <Clock className="w-4 h-4 flex-shrink-0" />
@@ -389,9 +440,13 @@ export default function EmpleosPage() {
                           </p>
 
                           <div className="pt-3 border-t border-amber-100">
-                            <p className="text-xs text-amber-600 font-medium mb-1">Salario</p>
-                            <p className="text-sm font-bold text-amber-900 mb-3">{vacante.salario}</p>
-                            
+                            <p className="text-xs text-amber-600 font-medium mb-1">
+                              Salario
+                            </p>
+                            <p className="text-sm font-bold text-amber-900 mb-3">
+                              {vacante.salario}
+                            </p>
+
                             <div className="flex items-center gap-2 text-amber-600 font-medium text-sm group-hover:text-amber-700 transition-colors">
                               Ver detalles
                               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -497,24 +552,39 @@ export default function EmpleosPage() {
                 Endulzando vidas desde hace más de 25 años
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Enlaces Rápidos</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/" className="text-amber-300/80 hover:text-amber-200">Inicio</Link></li>
-                <li><Link href="/empleos" className="text-amber-300/80 hover:text-amber-200">Vacantes</Link></li>
+                <li>
+                  <Link
+                    href="/"
+                    className="text-amber-300/80 hover:text-amber-200"
+                  >
+                    Inicio
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/empleos"
+                    className="text-amber-300/80 hover:text-amber-200"
+                  >
+                    Vacantes
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <p className="text-amber-300/80 text-sm">
-                ¿Preguntas sobre las vacantes?<br />
+                ¿Preguntas sobre las vacantes?
+                <br />
                 Escríbenos a: reclutamiento@amanecerdecanela.com
               </p>
             </div>
           </div>
-          
+
           <div className="border-t border-amber-800 pt-8 text-center text-sm text-amber-300/60">
             <p>© 2025 Amanecer de Canela. Todos los derechos reservados.</p>
           </div>
