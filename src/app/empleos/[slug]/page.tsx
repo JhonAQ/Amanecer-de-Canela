@@ -171,7 +171,7 @@ export default function DetalleVacantePage({ params }: PageProps) {
                   </p>
                   <p className="text-2xl font-bold text-amber-900">
                     ${vacante.salario_min?.toLocaleString("es-MX")} - $
-                    {vacante.salario_max?.toLocaleString("es-MX")} MXN
+                    {vacante.salario_max?.toLocaleString("es-MX")}
                   </p>
                 </div>
               </div>

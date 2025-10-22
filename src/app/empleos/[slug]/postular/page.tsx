@@ -423,7 +423,7 @@ export default function PostularPage({ params }: PageProps) {
                         ? "border-red-300 focus:border-red-500"
                         : "border-amber-200 focus:border-amber-500"
                     }`}
-                    placeholder="Ciudad de México"
+                    placeholder="San Roman"
                   />
                   {errors.ciudad && (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">

@@ -324,7 +324,7 @@ export default function VacantesPage() {
                           </span>
                           <span className="flex items-center gap-1">
                             <DollarSign className="w-4 h-4" />$
-                            {vacante.salario_min.toLocaleString()} - $
+                    
                             {vacante.salario_max.toLocaleString()}
                           </span>
                           <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
@@ -548,7 +548,7 @@ export default function VacantesPage() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-amber-900 mb-2">
-                        Salario Mínimo (MXN) *
+                        Salario Mínimo (Soless) *
                       </label>
                       <input
                         type="number"
@@ -561,7 +561,7 @@ export default function VacantesPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-amber-900 mb-2">
-                        Salario Máximo (MXN) *
+                        Salario Máximo (Soles) *
                       </label>
                       <input
                         type="number"

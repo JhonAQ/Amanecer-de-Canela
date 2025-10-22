@@ -167,7 +167,7 @@ export default function AjustesPage() {
                     </label>
                     <input
                       type="text"
-                      defaultValue="Av. Principal #123, Colonia Centro, Ciudad de México"
+                      defaultValue="Av. Principal #123, San Miguel, San Roman"
                       className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     />
                   </div>
