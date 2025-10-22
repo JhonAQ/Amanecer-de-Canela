@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,7 +17,7 @@ import {
   FileText,
   Users,
   X,
-  Check
+  Check,
 } from "lucide-react";
 import { vacantesAdmin, type Vacante } from "@/lib/data-admin";
 
@@ -30,19 +30,22 @@ export default function VacantesPage() {
   const [selectedVacante, setSelectedVacante] = useState<Vacante | null>(null);
 
   // Filtrado
-  const vacantesFiltradas = vacantes.filter(vacante => {
-    const matchSearch = vacante.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                       vacante.ubicacion.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchEstado = filterEstado === "Todas" || vacante.estado === filterEstado;
-    const matchCategoria = filterCategoria === "Todas" || vacante.categoria === filterCategoria;
-    
+  const vacantesFiltradas = vacantes.filter((vacante) => {
+    const matchSearch =
+      vacante.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vacante.ubicacion.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchEstado =
+      filterEstado === "Todas" || vacante.estado === filterEstado;
+    const matchCategoria =
+      filterCategoria === "Todas" || vacante.categoria === filterCategoria;
+
     return matchSearch && matchEstado && matchCategoria;
   });
 
   const estadoColors: Record<string, string> = {
-    "Activa": "bg-green-100 text-green-700 border-green-200",
-    "Pausada": "bg-yellow-100 text-yellow-700 border-yellow-200",
-    "Cerrada": "bg-red-100 text-red-700 border-red-200"
+    Activa: "bg-green-100 text-green-700 border-green-200",
+    Pausada: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    Cerrada: "bg-red-100 text-red-700 border-red-200",
   };
 
   const handleNewVacante = () => {
@@ -57,16 +60,24 @@ export default function VacantesPage() {
 
   const handleDeleteVacante = (id: number) => {
     if (confirm("¿Estás seguro de eliminar esta vacante?")) {
-      setVacantes(vacantes.filter(v => v.id !== id));
+      setVacantes(vacantes.filter((v) => v.id !== id));
     }
   };
 
   const handleToggleEstado = (id: number) => {
-    setVacantes(vacantes.map(v => 
-      v.id === id 
-        ? { ...v, estado: v.estado === "Activa" ? "Pausada" : "Activa" as "Activa" | "Pausada" | "Cerrada" }
-        : v
-    ));
+    setVacantes(
+      vacantes.map((v) =>
+        v.id === id
+          ? {
+              ...v,
+              estado:
+                v.estado === "Activa"
+                  ? "Pausada"
+                  : ("Activa" as "Activa" | "Pausada" | "Cerrada"),
+            }
+          : v
+      )
+    );
   };
 
   return (
@@ -134,17 +145,19 @@ export default function VacantesPage() {
         <div className="bg-white rounded-xl border border-green-200 p-4">
           <p className="text-sm text-green-600 font-medium mb-1">Activas</p>
           <p className="text-2xl font-bold text-green-700">
-            {vacantes.filter(v => v.estado === "Activa").length}
+            {vacantes.filter((v) => v.estado === "Activa").length}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-yellow-200 p-4">
           <p className="text-sm text-yellow-600 font-medium mb-1">Pausadas</p>
           <p className="text-2xl font-bold text-yellow-700">
-            {vacantes.filter(v => v.estado === "Pausada").length}
+            {vacantes.filter((v) => v.estado === "Pausada").length}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-amber-200 p-4">
-          <p className="text-sm text-amber-600 font-medium mb-1">Total Postulaciones</p>
+          <p className="text-sm text-amber-600 font-medium mb-1">
+            Total Postulaciones
+          </p>
           <p className="text-2xl font-bold text-amber-700">
             {vacantes.reduce((sum, v) => sum + v.postulaciones, 0)}
           </p>
@@ -187,7 +200,11 @@ export default function VacantesPage() {
                         </span>
                       </div>
                     </div>
-                    <span className={`px-4 py-1.5 rounded-full text-sm font-medium border ${estadoColors[vacante.estado]}`}>
+                    <span
+                      className={`px-4 py-1.5 rounded-full text-sm font-medium border ${
+                        estadoColors[vacante.estado]
+                      }`}
+                    >
                       {vacante.estado}
                     </span>
                   </div>
@@ -204,7 +221,9 @@ export default function VacantesPage() {
                       </div>
                       <div>
                         <p className="text-xs text-amber-600">Postulaciones</p>
-                        <p className="font-bold text-amber-950">{vacante.postulaciones}</p>
+                        <p className="font-bold text-amber-950">
+                          {vacante.postulaciones}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -213,7 +232,9 @@ export default function VacantesPage() {
                       </div>
                       <div>
                         <p className="text-xs text-amber-600">Vistas</p>
-                        <p className="font-bold text-amber-950">{vacante.vistas}</p>
+                        <p className="font-bold text-amber-950">
+                          {vacante.vistas}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -222,7 +243,9 @@ export default function VacantesPage() {
                       </div>
                       <div>
                         <p className="text-xs text-amber-600">Puestos</p>
-                        <p className="font-bold text-amber-950">{vacante.vacantesDisponibles}</p>
+                        <p className="font-bold text-amber-950">
+                          {vacante.vacantesDisponibles}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -232,7 +255,12 @@ export default function VacantesPage() {
                       <div>
                         <p className="text-xs text-amber-600">Publicada</p>
                         <p className="font-bold text-amber-950">
-                          {new Date(vacante.fechaPublicacion).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}
+                          {new Date(
+                            vacante.fechaPublicacion
+                          ).toLocaleDateString("es-MX", {
+                            day: "numeric",
+                            month: "short",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -249,7 +277,11 @@ export default function VacantesPage() {
                         : "bg-green-100 text-green-700 hover:bg-green-200"
                     }`}
                   >
-                    {vacante.estado === "Activa" ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {vacante.estado === "Activa" ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                     {vacante.estado === "Activa" ? "Pausar" : "Activar"}
                   </button>
                   <button
@@ -277,7 +309,9 @@ export default function VacantesPage() {
             <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-8 h-8 text-amber-600" />
             </div>
-            <h3 className="text-xl font-bold text-amber-950 mb-2">No se encontraron vacantes</h3>
+            <h3 className="text-xl font-bold text-amber-950 mb-2">
+              No se encontraron vacantes
+            </h3>
             <p className="text-amber-700">
               Intenta ajustar los filtros o crear una nueva vacante
             </p>
@@ -314,9 +348,198 @@ export default function VacantesPage() {
                 </button>
               </div>
               <div className="p-6">
-                <p className="text-amber-700 text-center py-8">
-                  Formulario de vacante (implementar con estado y validación)
-                </p>
+                <form className="space-y-6">
+                  {/* Título y Ubicación */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-amber-900 mb-2">
+                        Título de la Vacante *
+                      </label>
+                      <input
+                        type="text"
+                        defaultValue={selectedVacante?.titulo}
+                        placeholder="Ej: Maestro Panadero"
+                        required
+                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-amber-900 mb-2">
+                        Ubicación *
+                      </label>
+                      <input
+                        type="text"
+                        defaultValue={selectedVacante?.ubicacion}
+                        placeholder="Ej: Sucursal Centro"
+                        required
+                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tipo, Categoría y Puestos */}
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-amber-900 mb-2">
+                        Tipo de Contrato *
+                      </label>
+                      <select
+                        defaultValue={selectedVacante?.tipo}
+                        required
+                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      >
+                        <option value="">Seleccionar...</option>
+                        <option value="Tiempo Completo">Tiempo Completo</option>
+                        <option value="Medio Tiempo">Medio Tiempo</option>
+                        <option value="Por Proyecto">Por Proyecto</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-amber-900 mb-2">
+                        Categoría *
+                      </label>
+                      <select
+                        defaultValue={selectedVacante?.categoria}
+                        required
+                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      >
+                        <option value="">Seleccionar...</option>
+                        <option value="Producción">Producción</option>
+                        <option value="Ventas">Ventas</option>
+                        <option value="Gerencial">Gerencial</option>
+                        <option value="Administrativo">Administrativo</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-amber-900 mb-2">
+                        Puestos Disponibles *
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue={selectedVacante?.vacantesDisponibles || 1}
+                        min="1"
+                        required
+                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Salario */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-amber-900 mb-2">
+                        Salario Mínimo (MXN) *
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue={selectedVacante?.salarioMin}
+                        placeholder="15000"
+                        required
+                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-amber-900 mb-2">
+                        Salario Máximo (MXN) *
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue={selectedVacante?.salarioMax}
+                        placeholder="20000"
+                        required
+                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Descripción */}
+                  <div>
+                    <label className="block text-sm font-medium text-amber-900 mb-2">
+                      Descripción de la Vacante *
+                    </label>
+                    <textarea
+                      defaultValue={selectedVacante?.descripcion}
+                      rows={4}
+                      required
+                      placeholder="Describe la vacante, el perfil ideal y qué buscas..."
+                      className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  {/* Responsabilidades */}
+                  <div>
+                    <label className="block text-sm font-medium text-amber-900 mb-2">
+                      Responsabilidades (una por línea)
+                    </label>
+                    <textarea
+                      defaultValue={selectedVacante?.responsabilidades.join(
+                        "\n"
+                      )}
+                      rows={5}
+                      placeholder="Elaborar pan artesanal&#10;Supervisar y controlar la calidad&#10;Mantener la limpieza del área"
+                      className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  {/* Requisitos */}
+                  <div>
+                    <label className="block text-sm font-medium text-amber-900 mb-2">
+                      Requisitos (una por línea)
+                    </label>
+                    <textarea
+                      defaultValue={selectedVacante?.requisitos.join("\n")}
+                      rows={5}
+                      placeholder="Mínimo 3 años de experiencia&#10;Conocimiento de técnicas de panificación&#10;Disponibilidad de horario"
+                      className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  {/* Ofrecemos */}
+                  <div>
+                    <label className="block text-sm font-medium text-amber-900 mb-2">
+                      ¿Qué Ofrecemos? (una por línea)
+                    </label>
+                    <textarea
+                      defaultValue={selectedVacante?.ofrecemos.join("\n")}
+                      rows={4}
+                      placeholder="Salario competitivo&#10;Prestaciones de ley&#10;Capacitación continua"
+                      className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  {/* Estado */}
+                  <div>
+                    <label className="block text-sm font-medium text-amber-900 mb-2">
+                      Estado de la Vacante
+                    </label>
+                    <select
+                      defaultValue={selectedVacante?.estado || "Activa"}
+                      className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    >
+                      <option value="Activa">Activa</option>
+                      <option value="Pausada">Pausada</option>
+                      <option value="Cerrada">Cerrada</option>
+                    </select>
+                  </div>
+
+                  {/* Botones */}
+                  <div className="flex items-center justify-end gap-3 pt-6 border-t border-amber-100">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="px-6 py-3 border border-amber-300 text-amber-700 hover:bg-amber-50 rounded-xl font-semibold transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold transition-colors flex items-center gap-2"
+                    >
+                      <Check className="w-5 h-5" />
+                      {selectedVacante ? "Actualizar Vacante" : "Crear Vacante"}
+                    </button>
+                  </div>
+                </form>
               </div>
             </motion.div>
           </motion.div>

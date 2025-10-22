@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -16,7 +16,7 @@ import {
   X,
   Bell,
   Search,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 
 const navItems = [
@@ -72,7 +72,9 @@ export default function AdminLayout({
               <Briefcase className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-amber-950">Amanecer de Canela</h1>
+              <h1 className="text-lg font-bold text-amber-950">
+                Amanecer de Canela
+              </h1>
               <p className="text-xs text-amber-600">Panel Admin</p>
             </div>
           </Link>
@@ -89,19 +91,30 @@ export default function AdminLayout({
                   href={item.href}
                   className={`
                     flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all group relative
-                    ${isActive 
-                      ? 'bg-amber-600 text-white shadow-md' 
-                      : 'text-amber-700 hover:bg-amber-50 hover:text-amber-900'
+                    ${
+                      isActive
+                        ? "bg-amber-600 text-white shadow-md"
+                        : "text-amber-700 hover:bg-amber-50 hover:text-amber-900"
                     }
                   `}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-amber-500 group-hover:text-amber-700'}`} />
+                  <Icon
+                    className={`w-5 h-5 ${
+                      isActive
+                        ? "text-white"
+                        : "text-amber-500 group-hover:text-amber-700"
+                    }`}
+                  />
                   <span>{item.label}</span>
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
                       className="absolute inset-0 bg-amber-600 rounded-xl -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      transition={{
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 0.6,
+                      }}
                     />
                   )}
                 </Link>
@@ -117,7 +130,9 @@ export default function AdminLayout({
                   <span className="text-white font-bold text-sm">AD</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-amber-950 truncate">Admin</p>
+                  <p className="text-sm font-semibold text-amber-950 truncate">
+                    Admin
+                  </p>
                   <p className="text-xs text-amber-600 truncate">Reclutador</p>
                 </div>
               </div>
@@ -159,7 +174,9 @@ export default function AdminLayout({
                       <Briefcase className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h1 className="text-base font-bold text-amber-950">Amanecer de Canela</h1>
+                      <h1 className="text-base font-bold text-amber-950">
+                        Amanecer de Canela
+                      </h1>
                       <p className="text-xs text-amber-600">Panel Admin</p>
                     </div>
                   </Link>
@@ -184,9 +201,10 @@ export default function AdminLayout({
                         onClick={() => setSidebarOpen(false)}
                         className={`
                           flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
-                          ${isActive 
-                            ? 'bg-amber-600 text-white' 
-                            : 'text-amber-700 hover:bg-amber-50'
+                          ${
+                            isActive
+                              ? "bg-amber-600 text-white"
+                              : "text-amber-700 hover:bg-amber-50"
                           }
                         `}
                       >
@@ -228,14 +246,17 @@ export default function AdminLayout({
 
             {/* Breadcrumb */}
             <div className="hidden lg:flex items-center gap-2 text-sm">
-              <Link href="/admin" className="text-amber-600 hover:text-amber-800 font-medium">
+              <Link
+                href="/admin"
+                className="text-amber-600 hover:text-amber-800 font-medium"
+              >
                 Admin
               </Link>
               {pathname !== "/admin" && (
                 <>
                   <ChevronRight className="w-4 h-4 text-amber-400" />
                   <span className="text-amber-900 font-semibold capitalize">
-                    {pathname.split('/').pop()?.replace('-', ' ')}
+                    {pathname.split("/").pop()?.replace("-", " ")}
                   </span>
                 </>
               )}
@@ -259,16 +280,16 @@ export default function AdminLayout({
                 <div className="w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-xs">AD</span>
                 </div>
-                <span className="text-sm font-medium text-amber-900">Admin</span>
+                <span className="text-sm font-medium text-amber-900">
+                  Admin
+                </span>
               </div>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-8">
-          {children}
-        </main>
+        <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

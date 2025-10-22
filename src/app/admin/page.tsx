@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -14,18 +14,30 @@ import {
   ArrowRight,
   Calendar,
   MapPin,
-  DollarSign
+  DollarSign,
 } from "lucide-react";
-import { vacantesAdmin, postulacionesAdmin, candidatosAdmin } from "@/lib/data-admin";
+import {
+  vacantesAdmin,
+  postulacionesAdmin,
+  candidatosAdmin,
+} from "@/lib/data-admin";
 
 export default function AdminDashboard() {
   // Calcular métricas
   const totalVacantes = vacantesAdmin.length;
-  const vacantesActivas = vacantesAdmin.filter(v => v.estado === "Activa").length;
+  const vacantesActivas = vacantesAdmin.filter(
+    (v) => v.estado === "Activa"
+  ).length;
   const totalPostulaciones = postulacionesAdmin.length;
-  const postulacionesNuevas = postulacionesAdmin.filter(p => p.estado === "Nueva").length;
-  const enRevision = postulacionesAdmin.filter(p => p.estado === "En revisión").length;
-  const enEntrevista = postulacionesAdmin.filter(p => p.estado === "Entrevista").length;
+  const postulacionesNuevas = postulacionesAdmin.filter(
+    (p) => p.estado === "Nueva"
+  ).length;
+  const enRevision = postulacionesAdmin.filter(
+    (p) => p.estado === "En revisión"
+  ).length;
+  const enEntrevista = postulacionesAdmin.filter(
+    (p) => p.estado === "Entrevista"
+  ).length;
   const totalCandidatos = candidatosAdmin.length;
   const totalVistas = vacantesAdmin.reduce((sum, v) => sum + v.vistas, 0);
 
@@ -37,7 +49,7 @@ export default function AdminDashboard() {
       icon: Briefcase,
       color: "amber",
       change: "+2 esta semana",
-      href: "/admin/vacantes"
+      href: "/admin/vacantes",
     },
     {
       label: "Postulaciones Nuevas",
@@ -46,7 +58,7 @@ export default function AdminDashboard() {
       icon: FileText,
       color: "blue",
       change: "+5 hoy",
-      href: "/admin/postulaciones"
+      href: "/admin/postulaciones",
     },
     {
       label: "En Revisión",
@@ -55,7 +67,7 @@ export default function AdminDashboard() {
       icon: Clock,
       color: "yellow",
       change: "Requiere atención",
-      href: "/admin/postulaciones"
+      href: "/admin/postulaciones",
     },
     {
       label: "Candidatos Totales",
@@ -64,19 +76,21 @@ export default function AdminDashboard() {
       icon: Users,
       color: "green",
       change: "+3 este mes",
-      href: "/admin/candidatos"
-    }
+      href: "/admin/candidatos",
+    },
   ];
 
   const postulacionesRecientes = postulacionesAdmin.slice(0, 5);
-  const vacantesDestacadas = vacantesAdmin.filter(v => v.estado === "Activa").slice(0, 4);
+  const vacantesDestacadas = vacantesAdmin
+    .filter((v) => v.estado === "Activa")
+    .slice(0, 4);
 
   const estadoColors: Record<string, string> = {
-    "Nueva": "bg-blue-100 text-blue-700 border-blue-200",
+    Nueva: "bg-blue-100 text-blue-700 border-blue-200",
     "En revisión": "bg-yellow-100 text-yellow-700 border-yellow-200",
-    "Entrevista": "bg-purple-100 text-purple-700 border-purple-200",
-    "Rechazada": "bg-red-100 text-red-700 border-red-200",
-    "Contratado": "bg-green-100 text-green-700 border-green-200"
+    Entrevista: "bg-purple-100 text-purple-700 border-purple-200",
+    Rechazada: "bg-red-100 text-red-700 border-red-200",
+    Contratado: "bg-green-100 text-green-700 border-green-200",
   };
 
   return (
@@ -90,9 +104,7 @@ export default function AdminDashboard() {
         >
           Dashboard de Reclutamiento
         </motion.h1>
-        <p className="text-amber-700">
-          Resumen de actividad y métricas clave
-        </p>
+        <p className="text-amber-700">Resumen de actividad y métricas clave</p>
       </div>
 
       {/* Stats Grid */}
@@ -103,7 +115,7 @@ export default function AdminDashboard() {
             amber: "bg-amber-100 text-amber-600",
             blue: "bg-blue-100 text-blue-600",
             yellow: "bg-yellow-100 text-yellow-600",
-            green: "bg-green-100 text-green-600"
+            green: "bg-green-100 text-green-600",
           };
 
           return (
@@ -116,17 +128,25 @@ export default function AdminDashboard() {
               <Link href={stat.href}>
                 <div className="bg-white rounded-2xl p-6 border border-amber-100 shadow-md hover:shadow-xl transition-all cursor-pointer group">
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        colorClasses[stat.color as keyof typeof colorClasses]
+                      }`}
+                    >
                       <Icon className="w-6 h-6" />
                     </div>
                     <ArrowRight className="w-5 h-5 text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-amber-600">{stat.label}</p>
+                    <p className="text-sm font-medium text-amber-600">
+                      {stat.label}
+                    </p>
                     <p className="text-3xl font-bold text-amber-950">
                       {stat.value}
                       {stat.total > stat.value && (
-                        <span className="text-lg text-amber-400 font-normal">/{stat.total}</span>
+                        <span className="text-lg text-amber-400 font-normal">
+                          /{stat.total}
+                        </span>
                       )}
                     </p>
                     <p className="text-xs text-amber-500">{stat.change}</p>
@@ -150,7 +170,9 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-2xl border border-amber-100 shadow-md overflow-hidden">
             <div className="p-6 border-b border-amber-100">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-amber-950">Postulaciones Recientes</h2>
+                <h2 className="text-xl font-bold text-amber-950">
+                  Postulaciones Recientes
+                </h2>
                 <Link
                   href="/admin/postulaciones"
                   className="text-sm font-medium text-amber-600 hover:text-amber-800 flex items-center gap-1"
@@ -174,7 +196,10 @@ export default function AdminDashboard() {
                         {/* Avatar */}
                         <div className="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-white font-bold text-sm">
-                            {postulacion.candidatoNombre.split(' ').map(n => n[0]).join('')}
+                            {postulacion.candidatoNombre
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
                           </span>
                         </div>
 
@@ -185,16 +210,24 @@ export default function AdminDashboard() {
                               <h3 className="font-semibold text-amber-950 group-hover:text-amber-700 transition-colors">
                                 {postulacion.candidatoNombre}
                               </h3>
-                              <p className="text-sm text-amber-600">{postulacion.vacanteTitulo}</p>
+                              <p className="text-sm text-amber-600">
+                                {postulacion.vacanteTitulo}
+                              </p>
                             </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${estadoColors[postulacion.estado]}`}>
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                                estadoColors[postulacion.estado]
+                              }`}
+                            >
                               {postulacion.estado}
                             </span>
                           </div>
                           <div className="flex items-center gap-4 text-xs text-amber-500">
                             <span className="flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
-                              {new Date(postulacion.fechaPostulacion).toLocaleDateString('es-MX')}
+                              {new Date(
+                                postulacion.fechaPostulacion
+                              ).toLocaleDateString("es-MX")}
                             </span>
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
@@ -225,7 +258,9 @@ export default function AdminDashboard() {
           {/* Vacantes Destacadas */}
           <div className="bg-white rounded-2xl border border-amber-100 shadow-md overflow-hidden">
             <div className="p-5 border-b border-amber-100">
-              <h2 className="text-lg font-bold text-amber-950">Vacantes Activas</h2>
+              <h2 className="text-lg font-bold text-amber-950">
+                Vacantes Activas
+              </h2>
             </div>
             <div className="p-4 space-y-3">
               {vacantesDestacadas.map((vacante, index) => (
@@ -237,14 +272,19 @@ export default function AdminDashboard() {
                 >
                   <Link href={`/admin/vacantes`}>
                     <div className="p-4 rounded-xl border border-amber-100 hover:border-amber-300 hover:bg-amber-50/30 transition-all cursor-pointer">
-                      <h3 className="font-semibold text-amber-950 mb-2 text-sm">{vacante.titulo}</h3>
+                      <h3 className="font-semibold text-amber-950 mb-2 text-sm">
+                        {vacante.titulo}
+                      </h3>
                       <div className="flex items-center justify-between text-xs text-amber-600 mb-3">
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3" />
                           {vacante.ubicacion}
                         </span>
                         <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
-                          {vacante.vacantesDisponibles} {vacante.vacantesDisponibles === 1 ? 'puesto' : 'puestos'}
+                          {vacante.vacantesDisponibles}{" "}
+                          {vacante.vacantesDisponibles === 1
+                            ? "puesto"
+                            : "puestos"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
@@ -279,7 +319,10 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <span className="text-amber-100 text-sm">Tasa conversión</span>
                 <span className="text-2xl font-bold">
-                  {totalPostulaciones > 0 ? Math.round((enEntrevista / totalPostulaciones) * 100) : 0}%
+                  {totalPostulaciones > 0
+                    ? Math.round((enEntrevista / totalPostulaciones) * 100)
+                    : 0}
+                  %
                 </span>
               </div>
             </div>
@@ -294,7 +337,9 @@ export default function AdminDashboard() {
         transition={{ delay: 0.6 }}
         className="bg-white rounded-2xl border border-amber-100 shadow-md p-6"
       >
-        <h2 className="text-xl font-bold text-amber-950 mb-4">Acciones Rápidas</h2>
+        <h2 className="text-xl font-bold text-amber-950 mb-4">
+          Acciones Rápidas
+        </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             href="/admin/vacantes"
@@ -304,7 +349,9 @@ export default function AdminDashboard() {
               <Briefcase className="w-5 h-5 text-amber-600 group-hover:text-white" />
             </div>
             <div>
-              <p className="font-semibold text-amber-950 text-sm">Nueva Vacante</p>
+              <p className="font-semibold text-amber-950 text-sm">
+                Nueva Vacante
+              </p>
               <p className="text-xs text-amber-600">Publicar posición</p>
             </div>
           </Link>
@@ -317,8 +364,12 @@ export default function AdminDashboard() {
               <FileText className="w-5 h-5 text-blue-600 group-hover:text-white" />
             </div>
             <div>
-              <p className="font-semibold text-amber-950 text-sm">Ver Postulaciones</p>
-              <p className="text-xs text-amber-600">{postulacionesNuevas} nuevas</p>
+              <p className="font-semibold text-amber-950 text-sm">
+                Ver Postulaciones
+              </p>
+              <p className="text-xs text-amber-600">
+                {postulacionesNuevas} nuevas
+              </p>
             </div>
           </Link>
 
@@ -343,7 +394,9 @@ export default function AdminDashboard() {
               <TrendingUp className="w-5 h-5 text-purple-600 group-hover:text-white" />
             </div>
             <div>
-              <p className="font-semibold text-amber-950 text-sm">Configuración</p>
+              <p className="font-semibold text-amber-950 text-sm">
+                Configuración
+              </p>
               <p className="text-xs text-amber-600">Ajustes del sistema</p>
             </div>
           </Link>
