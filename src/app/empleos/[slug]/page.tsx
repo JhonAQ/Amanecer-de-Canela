@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { use } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
   Clock,
@@ -16,104 +16,68 @@ import {
   Calendar,
   GraduationCap,
   Target,
+  Loader2,
+  Eye,
 } from "lucide-react";
 import { notFound } from "next/navigation";
-
-// Datos de vacantes (mismo que en /empleos)
-const vacantesData = {
-  "maestro-panadero": {
-    id: 1,
-    slug: "maestro-panadero",
-    titulo: "Maestro Panadero",
-    ubicacion: "Sucursal Centro",
-    tipo: "Tiempo Completo",
-    categoria: "Producción",
-    salario: "$15,000 - $20,000 MXN",
-    descripcionCorta:
-      "Buscamos un maestro panadero con experiencia en elaboración de pan artesanal y productos de panadería tradicional.",
-    descripcion:
-      "Estamos buscando un Maestro Panadero apasionado y con experiencia para unirse a nuestro equipo en la Sucursal Centro. Serás responsable de la elaboración de pan artesanal de alta calidad, siguiendo nuestras recetas tradicionales y manteniendo los estándares de excelencia que nos caracterizan.",
-    responsabilidades: [
-      "Elaborar pan artesanal y productos de panadería siguiendo recetas establecidas",
-      "Supervisar y controlar la calidad de los productos horneados",
-      "Mantener la limpieza y organización del área de producción",
-      "Capacitar y guiar a ayudantes de panadería",
-      "Gestionar inventario de ingredientes y reportar necesidades",
-      "Cumplir con normas de higiene y seguridad alimentaria",
-    ],
-    requisitos: [
-      "Mínimo 3 años de experiencia como panadero",
-      "Conocimiento de técnicas de panificación artesanal",
-      "Disponibilidad de horario (madrugada)",
-      "Conocimientos de normas de higiene y seguridad alimentaria",
-      "Habilidad para trabajar en equipo",
-      "Certificado de manejo de alimentos (deseable)",
-    ],
-    ofrecemos: [
-      "Salario competitivo de $15,000 - $20,000 MXN",
-      "Prestaciones de ley desde el primer día",
-      "Capacitación continua",
-      "Descuentos en productos",
-      "Ambiente familiar y de crecimiento",
-      "Oportunidad de desarrollo profesional",
-    ],
-    horario: "Lunes a Sábado, 4:00 AM - 12:00 PM",
-    fechaPublicacion: "15 de Octubre, 2025",
-    vacantes: 2,
-  },
-  "cajero-sucursal": {
-    id: 2,
-    slug: "cajero-sucursal",
-    titulo: "Cajero/a de Sucursal",
-    ubicacion: "Varias Sucursales",
-    tipo: "Tiempo Completo",
-    categoria: "Ventas",
-    salario: "$10,000 - $12,000 MXN",
-    descripcionCorta:
-      "Buscamos personas con actitud de servicio para atención al cliente y manejo de caja en nuestras sucursales.",
-    descripcion:
-      "Buscamos personas dinámicas, responsables y con excelente actitud de servicio para el puesto de Cajero/a. Serás la primera imagen de nuestra empresa ante los clientes, brindando una experiencia de compra excepcional.",
-    responsabilidades: [
-      "Atender a clientes con amabilidad y profesionalismo",
-      "Realizar cobros y manejo de efectivo y tarjetas",
-      "Mantener el área de caja limpia y ordenada",
-      "Apoyar en el acomodo y exhibición de productos",
-      "Realizar cortes de caja y arqueos",
-      "Resolver dudas y quejas de clientes",
-    ],
-    requisitos: [
-      "Educación secundaria o preparatoria",
-      "Experiencia mínima de 6 meses en atención al cliente o ventas",
-      "Habilidad para manejo de efectivo",
-      "Excelente presentación",
-      "Actitud de servicio y amabilidad",
-      "Disponibilidad de horario",
-    ],
-    ofrecemos: [
-      "Salario de $10,000 - $12,000 MXN",
-      "Prestaciones de ley",
-      "Capacitación inicial",
-      "Descuentos en productos",
-      "Buen ambiente laboral",
-      "Oportunidades de crecimiento",
-    ],
-    horario: "Rolado (matutino, vespertino y mixto)",
-    fechaPublicacion: "18 de Octubre, 2025",
-    vacantes: 5,
-  },
-  // Agregar más vacantes según necesites
-};
+import { obtenerVacantePorSlug, incrementarVistas } from "@/lib/supabase";
+import type { Vacante } from "@/lib/supabase";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
 export default function DetalleVacantePage({ params }: PageProps) {
-  const { slug } = use(params);
-  const vacante = vacantesData[slug as keyof typeof vacantesData];
+  const [slug, setSlug] = useState<string>("");
+  const [vacante, setVacante] = useState<Vacante | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFoundError, setNotFoundError] = useState(false);
 
-  if (!vacante) {
+  useEffect(() => {
+    params.then((p) => setSlug(p.slug));
+  }, [params]);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    const cargarVacante = async () => {
+      try {
+        setLoading(true);
+        const data = await obtenerVacantePorSlug(slug);
+
+        if (!data) {
+          setNotFoundError(true);
+          return;
+        }
+
+        setVacante(data);
+
+        // Incrementar el contador de vistas
+        await incrementarVistas(data.id);
+      } catch (error) {
+        console.error("Error al cargar vacante:", error);
+        setNotFoundError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarVacante();
+  }, [slug]);
+
+  if (notFoundError) {
     notFound();
+  }
+
+  if (loading || !vacante) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 via-amber-50/50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 text-amber-600 animate-spin mx-auto mb-4" />
+          <p className="text-amber-700 text-lg">Cargando vacante...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -206,7 +170,8 @@ export default function DetalleVacantePage({ params }: PageProps) {
                     Salario mensual
                   </p>
                   <p className="text-2xl font-bold text-amber-900">
-                    {vacante.salario}
+                    ${vacante.salario_min?.toLocaleString("es-MX")} - $
+                    {vacante.salario_max?.toLocaleString("es-MX")} MXN
                   </p>
                 </div>
               </div>
@@ -223,7 +188,7 @@ export default function DetalleVacantePage({ params }: PageProps) {
                 <Target className="w-6 h-6 text-amber-600" />
                 Descripción del puesto
               </h2>
-              <p className="text-amber-800 leading-relaxed">
+              <p className="text-amber-800 leading-relaxed whitespace-pre-line">
                 {vacante.descripcion}
               </p>
             </motion.div>
@@ -239,7 +204,7 @@ export default function DetalleVacantePage({ params }: PageProps) {
                 Responsabilidades
               </h2>
               <ul className="space-y-3">
-                {vacante.responsabilidades.map((item, index) => (
+                {vacante.responsabilidades?.map((item, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                     <span className="text-amber-800">{item}</span>
@@ -260,7 +225,7 @@ export default function DetalleVacantePage({ params }: PageProps) {
                 Requisitos
               </h2>
               <ul className="space-y-3">
-                {vacante.requisitos.map((item, index) => (
+                {vacante.requisitos?.map((item, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                     <span className="text-amber-800">{item}</span>
@@ -280,7 +245,7 @@ export default function DetalleVacantePage({ params }: PageProps) {
                 ¿Qué ofrecemos?
               </h2>
               <ul className="space-y-3">
-                {vacante.ofrecemos.map((item, index) => (
+                {vacante.ofrecemos?.map((item, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
                     <span className="text-amber-900 font-medium">{item}</span>
@@ -323,23 +288,26 @@ export default function DetalleVacantePage({ params }: PageProps) {
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-amber-600 mt-0.5" />
+                    <Briefcase className="w-5 h-5 text-amber-600 mt-0.5" />
                     <div>
                       <p className="text-sm text-amber-600 font-medium">
-                        Horario
+                        Tipo de empleo
                       </p>
-                      <p className="text-amber-900">{vacante.horario}</p>
+                      <p className="text-amber-900">{vacante.tipo}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Users className="w-5 h-5 text-amber-600 mt-0.5" />
                     <div>
                       <p className="text-sm text-amber-600 font-medium">
-                        Vacantes
+                        Vacantes disponibles
                       </p>
                       <p className="text-amber-900">
-                        {vacante.vacantes} posición
-                        {vacante.vacantes > 1 ? "es" : ""}
+                        {vacante.vacantes_disponibles} posición
+                        {vacante.vacantes_disponibles &&
+                        vacante.vacantes_disponibles > 1
+                          ? "es"
+                          : ""}
                       </p>
                     </div>
                   </div>
@@ -350,7 +318,24 @@ export default function DetalleVacantePage({ params }: PageProps) {
                         Publicada
                       </p>
                       <p className="text-amber-900">
-                        {vacante.fechaPublicacion}
+                        {new Date(
+                          vacante.fecha_publicacion || vacante.created_at || ""
+                        ).toLocaleDateString("es-MX", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Eye className="w-5 h-5 text-amber-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-amber-600 font-medium">
+                        Vistas
+                      </p>
+                      <p className="text-amber-900">
+                        {vacante.vistas || 0} visualizaciones
                       </p>
                     </div>
                   </div>

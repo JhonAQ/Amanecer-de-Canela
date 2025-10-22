@@ -188,6 +188,26 @@ export async function eliminarVacante(id: string) {
   }
 }
 
+export async function incrementarVistas(id: string) {
+  try {
+    const { data: vacante } = await supabase
+      .from('vacantes')
+      .select('vistas')
+      .eq('id', id)
+      .single();
+
+    if (vacante) {
+      await supabase
+        .from('vacantes')
+        .update({ vistas: (vacante.vistas || 0) + 1 })
+        .eq('id', id);
+    }
+  } catch (error) {
+    console.error('Error al incrementar vistas:', error);
+    // No lanzamos error para no bloquear la carga de la página
+  }
+}
+
 // =============================================
 // FUNCIONES DE CANDIDATOS
 // =============================================
