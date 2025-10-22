@@ -3,22 +3,23 @@ import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const poppins = Poppins({
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
   variable: "--font-poppins",
-  display: 'swap',
+  display: "swap",
 });
 
 const playfair = Playfair_Display({
-  weight: ['700', '800', '900'],
+  weight: ["700", "800", "900"],
   subsets: ["latin"],
   variable: "--font-playfair",
-  display: 'swap',
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Amanecer de Canela - Únete a nuestro equipo",
-  description: "Portal de reclutamiento de Amanecer de Canela. Descubre oportunidades de carrera en nuestra panadería.",
+  description:
+    "Portal de reclutamiento de Amanecer de Canela. Descubre oportunidades de carrera en nuestra panadería.",
 };
 
 export default function RootLayout({
@@ -28,9 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${poppins.variable} ${playfair.variable}`}>
-      <body className={`${poppins.className} antialiased`}>
-        {children}
-      </body>
+      <body className={`${poppins.className} antialiased`}>{children}</body>
     </html>
   );
 }
