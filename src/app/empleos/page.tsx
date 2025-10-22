@@ -16,128 +16,56 @@ import {
   ChefHat,
   ShoppingBag,
   Wallet,
+  Loader2,
+  DollarSign,
 } from "lucide-react";
-import { useState } from "react";
-
-// Datos de ejemplo de vacantes (luego vendrán de una API/base de datos)
-const vacantes = [
-  {
-    id: 1,
-    slug: "maestro-panadero",
-    titulo: "Maestro Panadero",
-    ubicacion: "Sucursal Centro",
-    tipo: "Tiempo Completo",
-    categoria: "Producción",
-    salario: "$15,000 - $20,000 MXN",
-    descripcion:
-      "Buscamos un maestro panadero con experiencia en elaboración de pan artesanal y productos de panadería tradicional.",
-    icon: ChefHat,
-    color: "from-amber-600 to-amber-700",
-    destacada: true,
-  },
-  {
-    id: 2,
-    slug: "cajero-sucursal",
-    titulo: "Cajero/a de Sucursal",
-    ubicacion: "Varias Sucursales",
-    tipo: "Tiempo Completo",
-    categoria: "Ventas",
-    salario: "$10,000 - $12,000 MXN",
-    descripcion:
-      "Buscamos personas con actitud de servicio para atención al cliente y manejo de caja en nuestras sucursales.",
-    icon: Wallet,
-    color: "from-stone-600 to-stone-700",
-    destacada: false,
-  },
-  {
-    id: 3,
-    slug: "ayudante-de-pasteleria",
-    titulo: "Ayudante de Pastelería",
-    ubicacion: "Sucursal Norte",
-    tipo: "Medio Tiempo",
-    categoria: "Producción",
-    salario: "$8,000 - $10,000 MXN",
-    descripcion:
-      "Únete a nuestro equipo de pastelería y aprende el arte de crear dulces momentos.",
-    icon: Croissant,
-    color: "from-yellow-700 to-amber-700",
-    destacada: false,
-  },
-  {
-    id: 4,
-    slug: "vendedor-mostrador",
-    titulo: "Vendedor/a de Mostrador",
-    ubicacion: "Sucursal Sur",
-    tipo: "Tiempo Completo",
-    categoria: "Ventas",
-    salario: "$9,000 - $11,000 MXN",
-    descripcion:
-      "Buscamos personas apasionadas por el servicio al cliente para nuestro equipo de ventas.",
-    icon: ShoppingBag,
-    color: "from-amber-500 to-yellow-600",
-    destacada: false,
-  },
-  {
-    id: 5,
-    slug: "supervisor-de-produccion",
-    titulo: "Supervisor de Producción",
-    ubicacion: "Planta Central",
-    tipo: "Tiempo Completo",
-    categoria: "Supervisión",
-    salario: "$18,000 - $22,000 MXN",
-    descripcion:
-      "Buscamos líder con experiencia en gestión de equipos de producción en la industria alimentaria.",
-    icon: Users,
-    color: "from-amber-700 to-yellow-800",
-    destacada: true,
-  },
-  {
-    id: 6,
-    slug: "repartidor",
-    titulo: "Repartidor",
-    ubicacion: "Zona Metropolitana",
-    tipo: "Tiempo Completo",
-    categoria: "Logística",
-    salario: "$11,000 - $14,000 MXN",
-    descripcion:
-      "Únete a nuestro equipo de distribución y lleva la frescura de nuestros productos a cada rincón.",
-    icon: TrendingUp,
-    color: "from-stone-500 to-amber-600",
-    destacada: false,
-  },
-];
-
-const categorias = [
-  "Todas",
-  "Producción",
-  "Ventas",
-  "Supervisión",
-  "Logística",
-];
-const tipos = ["Todos", "Tiempo Completo", "Medio Tiempo"];
+import { useState, useEffect } from "react";
+import { obtenerVacantes, type Vacante } from "@/lib/supabase";
 
 export default function EmpleosPage() {
-  const [busqueda, setBusqueda] = useState("");
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
-  const [tipoSeleccionado, setTipoSeleccionado] = useState("Todos");
-  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [vacantes, setVacantes] = useState<Vacante[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Todas");
 
-  // Filtrar vacantes
+  useEffect(() => {
+    cargarVacantes();
+  }, []);
+
+  async function cargarVacantes() {
+    try {
+      setLoading(true);
+      // Solo obtener vacantes activas para el público
+      const data = await obtenerVacantes({ estado: "Activa" });
+      setVacantes(data);
+    } catch (error) {
+      console.error("Error al cargar vacantes:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const vacantesFiltradas = vacantes.filter((vacante) => {
-    const coincideBusqueda =
-      vacante.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-      vacante.ubicacion.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideCategoria =
-      categoriaSeleccionada === "Todas" ||
-      vacante.categoria === categoriaSeleccionada;
-    const coincideTipo =
-      tipoSeleccionado === "Todos" || vacante.tipo === tipoSeleccionado;
+    const matchSearch =
+      vacante.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vacante.ubicacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vacante.descripcion.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return coincideBusqueda && coincideCategoria && coincideTipo;
+    const matchCategory =
+      selectedCategory === "Todas" || vacante.categoria === selectedCategory;
+
+    return matchSearch && matchCategory;
   });
 
-  const vacantesDestacadas = vacantesFiltradas.filter((v) => v.destacada);
-  const vacantesNormales = vacantesFiltradas.filter((v) => !v.destacada);
+  const categorias = [
+    "Todas",
+    "Producción",
+    "Ventas",
+    "Gerencial",
+    "Administrativo",
+  ];
+  
+  const tipos = ["Todos", "Tiempo Completo", "Medio Tiempo", "Por Proyecto"];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 via-amber-50/50 to-white">
@@ -197,7 +125,7 @@ export default function EmpleosPage() {
           >
             <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-full mb-6 text-sm font-medium backdrop-blur-sm border border-white/30">
               <Briefcase className="w-4 h-4" />
-              {vacantes.length} vacantes disponibles
+              {loading ? "Cargando..." : `${vacantes.length} vacantes disponibles`}
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
               Encuentra tu lugar perfecto
@@ -228,35 +156,26 @@ export default function EmpleosPage() {
               <input
                 type="text"
                 placeholder="Buscar por puesto o ubicación..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors"
               />
             </div>
 
             <button
-              onClick={() => setMostrarFiltros(!mostrarFiltros)}
+              onClick={() => {}}
               className="lg:hidden flex items-center gap-2 px-6 py-3 bg-amber-100 text-amber-700 rounded-xl font-medium hover:bg-amber-200 transition-colors"
             >
               <Filter className="w-5 h-5" />
               Filtros
             </button>
-          </div>
 
-          {/* Filters */}
-          <div
-            className={`grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 ${
-              mostrarFiltros ? "block" : "hidden lg:grid"
-            }`}
-          >
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">
-                Categoría
-              </label>
+            {/* Desktop Filters */}
+            <div className="hidden lg:flex items-center gap-3">
               <select
-                value={categoriaSeleccionada}
-                onChange={(e) => setCategoriaSeleccionada(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors bg-white"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-3 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors"
               >
                 {categorias.map((cat) => (
                   <option key={cat} value={cat}>
@@ -265,230 +184,105 @@ export default function EmpleosPage() {
                 ))}
               </select>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-amber-900 mb-2">
-                Tipo de empleo
-              </label>
-              <select
-                value={tipoSeleccionado}
-                onChange={(e) => setTipoSeleccionado(e.target.value)}
-                className="w-full px-4 py-2.5 border-2 border-amber-200 rounded-xl focus:border-amber-500 focus:outline-none transition-colors bg-white"
-              >
-                {tipos.map((tipo) => (
-                  <option key={tipo} value={tipo}>
-                    {tipo}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
-          {/* Results count */}
-          <div className="mt-4 pt-4 border-t border-amber-100">
-            <p className="text-sm text-amber-700">
-              Mostrando{" "}
-              <span className="font-semibold">{vacantesFiltradas.length}</span>{" "}
-              {vacantesFiltradas.length === 1 ? "vacante" : "vacantes"}
-            </p>
-          </div>
+          {/* Results Count */}
+          <p className="text-amber-700 text-sm">
+            Mostrando {vacantesFiltradas.length} de {vacantes.length} vacantes
+          </p>
         </motion.div>
       </section>
 
       {/* Job Listings */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Featured Jobs */}
-        {vacantesDestacadas.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-1 h-8 bg-gradient-to-b from-amber-500 to-orange-500 rounded-full"></div>
-              <h3 className="text-2xl font-bold text-amber-950">
-                Vacantes Destacadas
-              </h3>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {vacantesDestacadas.map((vacante, index) => {
-                const Icon = vacante.icon;
-                return (
-                  <motion.div
-                    key={vacante.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Link href={`/empleos/${vacante.slug}`}>
-                      <div className="group relative bg-white rounded-2xl overflow-hidden border-2 border-amber-200 hover:border-amber-400 transition-all shadow-md hover:shadow-xl">
-                        {/* Badge destacado */}
-                        <div className="absolute top-4 right-4 z-10">
-                          <span className="bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg">
-                            ⭐ Destacada
-                          </span>
-                        </div>
-
-                        {/* Gradient header */}
-                        <div
-                          className={`h-2 bg-gradient-to-r ${vacante.color}`}
-                        ></div>
-
-                        <div className="p-6">
-                          <div className="flex items-start gap-4 mb-4">
-                            <div
-                              className={`w-14 h-14 rounded-xl bg-gradient-to-br ${vacante.color} flex items-center justify-center flex-shrink-0 shadow-lg`}
-                            >
-                              <Icon className="w-7 h-7 text-white" />
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="text-xl font-bold text-amber-950 mb-1 group-hover:text-amber-700 transition-colors">
-                                {vacante.titulo}
-                              </h4>
-                              <div className="flex flex-wrap gap-2 text-sm text-amber-700">
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="w-4 h-4" />
-                                  {vacante.ubicacion}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {vacante.tipo}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <p className="text-amber-800 mb-4 line-clamp-2">
-                            {vacante.descripcion}
-                          </p>
-
-                          <div className="flex items-center justify-between pt-4 border-t border-amber-100">
-                            <div>
-                              <p className="text-xs text-amber-600 font-medium">
-                                Salario
-                              </p>
-                              <p className="text-sm font-bold text-amber-900">
-                                {vacante.salario}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2 text-amber-600 font-medium group-hover:text-amber-700 transition-colors">
-                              Ver detalles
-                              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
+        {loading ? (
+          <div className="bg-white rounded-2xl border border-amber-100 p-12 text-center">
+            <Loader2 className="w-12 h-12 text-amber-600 animate-spin mx-auto mb-4" />
+            <p className="text-amber-700">Cargando vacantes...</p>
           </div>
-        )}
-
-        {/* Regular Jobs */}
-        {vacantesNormales.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-1 h-8 bg-gradient-to-b from-amber-400 to-orange-400 rounded-full"></div>
-              <h3 className="text-2xl font-bold text-amber-950">
-                Todas las Vacantes
-              </h3>
+        ) : vacantesFiltradas.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-amber-100 p-12 text-center">
+            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-amber-600" />
             </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {vacantesNormales.map((vacante, index) => {
-                const Icon = vacante.icon;
-                return (
-                  <motion.div
-                    key={vacante.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link href={`/empleos/${vacante.slug}`}>
-                      <div className="group bg-white rounded-xl overflow-hidden border border-amber-200 hover:border-amber-400 transition-all shadow-sm hover:shadow-lg h-full">
-                        <div
-                          className={`h-1.5 bg-gradient-to-r ${vacante.color}`}
-                        ></div>
-
-                        <div className="p-5">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div
-                              className={`w-11 h-11 rounded-lg bg-gradient-to-br ${vacante.color} flex items-center justify-center flex-shrink-0`}
-                            >
-                              <Icon className="w-6 h-6 text-white" />
-                            </div>
-                            <h4 className="text-lg font-bold text-amber-950 group-hover:text-amber-700 transition-colors line-clamp-1">
-                              {vacante.titulo}
-                            </h4>
-                          </div>
-
-                          <div className="space-y-2 mb-4">
-                            <div className="flex items-center gap-1 text-sm text-amber-700">
-                              <MapPin className="w-4 h-4 flex-shrink-0" />
-                              <span className="line-clamp-1">
-                                {vacante.ubicacion}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1 text-sm text-amber-700">
-                              <Clock className="w-4 h-4 flex-shrink-0" />
-                              <span>{vacante.tipo}</span>
-                            </div>
-                          </div>
-
-                          <p className="text-sm text-amber-800 mb-4 line-clamp-2">
-                            {vacante.descripcion}
-                          </p>
-
-                          <div className="pt-3 border-t border-amber-100">
-                            <p className="text-xs text-amber-600 font-medium mb-1">
-                              Salario
-                            </p>
-                            <p className="text-sm font-bold text-amber-900 mb-3">
-                              {vacante.salario}
-                            </p>
-
-                            <div className="flex items-center gap-2 text-amber-600 font-medium text-sm group-hover:text-amber-700 transition-colors">
-                              Ver detalles
-                              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* No results */}
-        {vacantesFiltradas.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
-          >
-            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-10 h-10 text-amber-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-amber-950 mb-2">
+            <h3 className="text-xl font-bold text-amber-950 mb-2">
               No se encontraron vacantes
             </h3>
             <p className="text-amber-700 mb-6">
-              Intenta ajustar tus filtros de búsqueda
+              {vacantes.length === 0
+                ? "No hay vacantes disponibles en este momento. Vuelve pronto."
+                : "Intenta ajustar los filtros de búsqueda"}
             </p>
-            <button
-              onClick={() => {
-                setBusqueda("");
-                setCategoriaSeleccionada("Todas");
-                setTipoSeleccionado("Todos");
-              }}
-              className="px-6 py-3 bg-amber-600 text-white rounded-full font-medium hover:bg-amber-700 transition-colors"
-            >
-              Limpiar filtros
-            </button>
-          </motion.div>
+            {vacantes.length > 0 && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("Todas");
+                }}
+                className="px-6 py-3 bg-amber-600 text-white rounded-full font-medium hover:bg-amber-700 transition-colors"
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vacantesFiltradas.map((vacante, index) => (
+              <motion.div
+                key={vacante.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Link href={`/empleos/${vacante.slug}`}>
+                  <div className="group bg-white rounded-xl overflow-hidden border border-amber-200 hover:border-amber-400 transition-all shadow-sm hover:shadow-lg h-full">
+                    <div className="h-1.5 bg-gradient-to-r from-amber-400 to-orange-400"></div>
+
+                    <div className="p-5">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center flex-shrink-0">
+                          <Briefcase className="w-6 h-6 text-white" />
+                        </div>
+                        <h4 className="text-lg font-bold text-amber-950 group-hover:text-amber-700 transition-colors line-clamp-1">
+                          {vacante.titulo}
+                        </h4>
+                      </div>
+
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-1 text-sm text-amber-700">
+                          <MapPin className="w-4 h-4 flex-shrink-0" />
+                          <span className="line-clamp-1">{vacante.ubicacion}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-amber-700">
+                          <Clock className="w-4 h-4 flex-shrink-0" />
+                          <span>{vacante.tipo}</span>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-amber-800 mb-4 line-clamp-2">
+                        {vacante.descripcion}
+                      </p>
+
+                      <div className="pt-3 border-t border-amber-100">
+                        <p className="text-xs text-amber-600 font-medium mb-1">
+                          Salario
+                        </p>
+                        <p className="text-sm font-bold text-amber-900 mb-3">
+                          ${vacante.salario_min?.toLocaleString("es-MX")} - ${vacante.salario_max?.toLocaleString("es-MX")}
+                        </p>
+
+                        <div className="flex items-center gap-2 text-amber-600 font-medium text-sm group-hover:text-amber-700 transition-colors">
+                          Ver detalles
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         )}
       </section>
 

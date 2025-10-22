@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -18,16 +18,43 @@ import {
   Users,
   X,
   Check,
+  Loader2,
 } from "lucide-react";
-import { vacantesAdmin, type Vacante } from "@/lib/data-admin";
+import { 
+  obtenerVacantes, 
+  crearVacante, 
+  actualizarVacante, 
+  eliminarVacante,
+  type Vacante 
+} from "@/lib/supabase";
 
 export default function VacantesPage() {
-  const [vacantes, setVacantes] = useState<Vacante[]>(vacantesAdmin);
+  const [vacantes, setVacantes] = useState<Vacante[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterEstado, setFilterEstado] = useState<string>("Todas");
   const [filterCategoria, setFilterCategoria] = useState<string>("Todas");
   const [showModal, setShowModal] = useState(false);
   const [selectedVacante, setSelectedVacante] = useState<Vacante | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Cargar vacantes de Supabase al montar
+  useEffect(() => {
+    cargarVacantes();
+  }, []);
+
+  async function cargarVacantes() {
+    try {
+      setLoading(true);
+      const data = await obtenerVacantes();
+      setVacantes(data);
+    } catch (error) {
+      console.error("Error al cargar vacantes:", error);
+      alert("Error al cargar vacantes. Verifica la conexión con Supabase.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // Filtrado
   const vacantesFiltradas = vacantes.filter((vacante) => {
@@ -58,26 +85,106 @@ export default function VacantesPage() {
     setShowModal(true);
   };
 
-  const handleDeleteVacante = (id: number) => {
+  const handleDeleteVacante = async (id: string) => {
     if (confirm("¿Estás seguro de eliminar esta vacante?")) {
-      setVacantes(vacantes.filter((v) => v.id !== id));
+      try {
+        await eliminarVacante(id);
+        await cargarVacantes(); // Recargar lista
+        alert("Vacante eliminada correctamente");
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al eliminar la vacante");
+      }
     }
   };
 
-  const handleToggleEstado = (id: number) => {
-    setVacantes(
-      vacantes.map((v) =>
-        v.id === id
-          ? {
-              ...v,
-              estado:
-                v.estado === "Activa"
-                  ? "Pausada"
-                  : ("Activa" as "Activa" | "Pausada" | "Cerrada"),
-            }
-          : v
-      )
-    );
+  const handleToggleEstado = async (id: string, estadoActual: string) => {
+    try {
+      const nuevoEstado = estadoActual === "Activa" ? "Pausada" : "Activa";
+      await actualizarVacante(id, { estado: nuevoEstado as any });
+      await cargarVacantes(); // Recargar lista
+    } catch (error) {
+      console.error("Error al cambiar estado:", error);
+      alert("Error al cambiar el estado");
+    }
+  };
+
+  const handleSaveVacante = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      
+      // Generar slug desde el título
+      const titulo = formData.get("titulo") as string;
+      const slug = titulo
+        .toLowerCase()
+        .replace(/[áàäâ]/g, 'a')
+        .replace(/[éèëê]/g, 'e')
+        .replace(/[íìïî]/g, 'i')
+        .replace(/[óòöô]/g, 'o')
+        .replace(/[úùüû]/g, 'u')
+        .replace(/ñ/g, 'n')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+      // Procesar arrays (responsabilidades, requisitos, ofrecemos)
+      const responsabilidadesText = formData.get("responsabilidades") as string;
+      const requisitosText = formData.get("requisitos") as string;
+      const ofrecemosText = formData.get("ofrecemos") as string;
+
+      const responsabilidades = responsabilidadesText
+        .split("\n")
+        .map(r => r.trim())
+        .filter(r => r.length > 0);
+      
+      const requisitos = requisitosText
+        .split("\n")
+        .map(r => r.trim())
+        .filter(r => r.length > 0);
+      
+      const ofrecemos = ofrecemosText
+        .split("\n")
+        .map(r => r.trim())
+        .filter(r => r.length > 0);
+
+      const vacanteData = {
+        slug,
+        titulo,
+        ubicacion: formData.get("ubicacion") as string,
+        tipo: formData.get("tipo") as any,
+        categoria: formData.get("categoria") as string,
+        salario_min: parseInt(formData.get("salario_min") as string),
+        salario_max: parseInt(formData.get("salario_max") as string),
+        descripcion: formData.get("descripcion") as string,
+        responsabilidades,
+        requisitos,
+        ofrecemos,
+        estado: formData.get("estado") as any,
+        vacantes_disponibles: parseInt(formData.get("vacantes_disponibles") as string),
+        fecha_publicacion: new Date().toISOString(),
+        vistas: 0,
+      };
+
+      if (selectedVacante) {
+        // Actualizar vacante existente
+        await actualizarVacante(selectedVacante.id, vacanteData);
+        alert("Vacante actualizada correctamente");
+      } else {
+        // Crear nueva vacante
+        await crearVacante(vacanteData as any);
+        alert("Vacante creada correctamente");
+      }
+
+      setShowModal(false);
+      await cargarVacantes(); // Recargar lista
+    } catch (error) {
+      console.error("Error al guardar vacante:", error);
+      alert("Error al guardar la vacante. Verifica los datos e intenta de nuevo.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -156,17 +263,40 @@ export default function VacantesPage() {
         </div>
         <div className="bg-white rounded-xl border border-amber-200 p-4">
           <p className="text-sm text-amber-600 font-medium mb-1">
-            Total Postulaciones
+            Total Vistas
           </p>
           <p className="text-2xl font-bold text-amber-700">
-            {vacantes.reduce((sum, v) => sum + v.postulaciones, 0)}
+            {vacantes.reduce((sum, v) => sum + (v.vistas || 0), 0)}
           </p>
         </div>
       </div>
 
       {/* Vacantes Grid */}
       <div className="grid gap-6">
-        {vacantesFiltradas.map((vacante, index) => (
+        {loading ? (
+          // Loading state
+          <div className="bg-white rounded-2xl border border-amber-100 p-12 text-center">
+            <Loader2 className="w-12 h-12 text-amber-600 animate-spin mx-auto mb-4" />
+            <p className="text-amber-700">Cargando vacantes...</p>
+          </div>
+        ) : vacantesFiltradas.length === 0 ? (
+          // Empty state
+          <div className="bg-white rounded-2xl border border-amber-100 p-12 text-center">
+            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-amber-600" />
+            </div>
+            <h3 className="text-xl font-bold text-amber-950 mb-2">
+              No se encontraron vacantes
+            </h3>
+            <p className="text-amber-700">
+              {vacantes.length === 0
+                ? "Crea tu primera vacante para comenzar"
+                : "Intenta ajustar los filtros"}
+            </p>
+          </div>
+        ) : (
+          // Vacantes list
+          vacantesFiltradas.map((vacante, index) => (
           <motion.div
             key={vacante.id}
             initial={{ opacity: 0, y: 20 }}
@@ -190,7 +320,7 @@ export default function VacantesPage() {
                         </span>
                         <span className="flex items-center gap-1">
                           <DollarSign className="w-4 h-4" />
-                          {vacante.salario}
+                          ${vacante.salario_min.toLocaleString()} - ${vacante.salario_max.toLocaleString()}
                         </span>
                         <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
                           {vacante.categoria}
@@ -216,24 +346,13 @@ export default function VacantesPage() {
                   {/* Metrics */}
                   <div className="flex flex-wrap items-center gap-6 text-sm">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-amber-600">Postulaciones</p>
-                        <p className="font-bold text-amber-950">
-                          {vacante.postulaciones}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                         <Eye className="w-4 h-4 text-purple-600" />
                       </div>
                       <div>
                         <p className="text-xs text-amber-600">Vistas</p>
                         <p className="font-bold text-amber-950">
-                          {vacante.vistas}
+                          {vacante.vistas || 0}
                         </p>
                       </div>
                     </div>
@@ -244,7 +363,7 @@ export default function VacantesPage() {
                       <div>
                         <p className="text-xs text-amber-600">Puestos</p>
                         <p className="font-bold text-amber-950">
-                          {vacante.vacantesDisponibles}
+                          {vacante.vacantes_disponibles}
                         </p>
                       </div>
                     </div>
@@ -256,7 +375,7 @@ export default function VacantesPage() {
                         <p className="text-xs text-amber-600">Publicada</p>
                         <p className="font-bold text-amber-950">
                           {new Date(
-                            vacante.fechaPublicacion
+                            vacante.fecha_publicacion
                           ).toLocaleDateString("es-MX", {
                             day: "numeric",
                             month: "short",
@@ -270,7 +389,7 @@ export default function VacantesPage() {
                 {/* Actions */}
                 <div className="flex lg:flex-col gap-2">
                   <button
-                    onClick={() => handleToggleEstado(vacante.id)}
+                    onClick={() => handleToggleEstado(vacante.id, vacante.estado)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                       vacante.estado === "Activa"
                         ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
@@ -302,20 +421,7 @@ export default function VacantesPage() {
               </div>
             </div>
           </motion.div>
-        ))}
-
-        {vacantesFiltradas.length === 0 && (
-          <div className="bg-white rounded-2xl border border-amber-100 p-12 text-center">
-            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-amber-600" />
-            </div>
-            <h3 className="text-xl font-bold text-amber-950 mb-2">
-              No se encontraron vacantes
-            </h3>
-            <p className="text-amber-700">
-              Intenta ajustar los filtros o crear una nueva vacante
-            </p>
-          </div>
+          ))
         )}
       </div>
 
@@ -348,7 +454,7 @@ export default function VacantesPage() {
                 </button>
               </div>
               <div className="p-6">
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSaveVacante}>
                   {/* Título y Ubicación */}
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
@@ -357,6 +463,7 @@ export default function VacantesPage() {
                       </label>
                       <input
                         type="text"
+                        name="titulo"
                         defaultValue={selectedVacante?.titulo}
                         placeholder="Ej: Maestro Panadero"
                         required
@@ -369,6 +476,7 @@ export default function VacantesPage() {
                       </label>
                       <input
                         type="text"
+                        name="ubicacion"
                         defaultValue={selectedVacante?.ubicacion}
                         placeholder="Ej: Sucursal Centro"
                         required
@@ -384,6 +492,7 @@ export default function VacantesPage() {
                         Tipo de Contrato *
                       </label>
                       <select
+                        name="tipo"
                         defaultValue={selectedVacante?.tipo}
                         required
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
@@ -399,6 +508,7 @@ export default function VacantesPage() {
                         Categoría *
                       </label>
                       <select
+                        name="categoria"
                         defaultValue={selectedVacante?.categoria}
                         required
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
@@ -416,7 +526,8 @@ export default function VacantesPage() {
                       </label>
                       <input
                         type="number"
-                        defaultValue={selectedVacante?.vacantesDisponibles || 1}
+                        name="vacantes_disponibles"
+                        defaultValue={selectedVacante?.vacantes_disponibles || 1}
                         min="1"
                         required
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
@@ -432,7 +543,8 @@ export default function VacantesPage() {
                       </label>
                       <input
                         type="number"
-                        defaultValue={selectedVacante?.salarioMin}
+                        name="salario_min"
+                        defaultValue={selectedVacante?.salario_min}
                         placeholder="15000"
                         required
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
@@ -444,7 +556,8 @@ export default function VacantesPage() {
                       </label>
                       <input
                         type="number"
-                        defaultValue={selectedVacante?.salarioMax}
+                        name="salario_max"
+                        defaultValue={selectedVacante?.salario_max}
                         placeholder="20000"
                         required
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
@@ -458,6 +571,7 @@ export default function VacantesPage() {
                       Descripción de la Vacante *
                     </label>
                     <textarea
+                      name="descripcion"
                       defaultValue={selectedVacante?.descripcion}
                       rows={4}
                       required
@@ -472,6 +586,7 @@ export default function VacantesPage() {
                       Responsabilidades (una por línea)
                     </label>
                     <textarea
+                      name="responsabilidades"
                       defaultValue={selectedVacante?.responsabilidades.join(
                         "\n"
                       )}
@@ -487,6 +602,7 @@ export default function VacantesPage() {
                       Requisitos (una por línea)
                     </label>
                     <textarea
+                      name="requisitos"
                       defaultValue={selectedVacante?.requisitos.join("\n")}
                       rows={5}
                       placeholder="Mínimo 3 años de experiencia&#10;Conocimiento de técnicas de panificación&#10;Disponibilidad de horario"
@@ -500,6 +616,7 @@ export default function VacantesPage() {
                       ¿Qué Ofrecemos? (una por línea)
                     </label>
                     <textarea
+                      name="ofrecemos"
                       defaultValue={selectedVacante?.ofrecemos.join("\n")}
                       rows={4}
                       placeholder="Salario competitivo&#10;Prestaciones de ley&#10;Capacitación continua"
@@ -513,6 +630,7 @@ export default function VacantesPage() {
                       Estado de la Vacante
                     </label>
                     <select
+                      name="estado"
                       defaultValue={selectedVacante?.estado || "Activa"}
                       className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     >
@@ -527,16 +645,27 @@ export default function VacantesPage() {
                     <button
                       type="button"
                       onClick={() => setShowModal(false)}
-                      className="px-6 py-3 border border-amber-300 text-amber-700 hover:bg-amber-50 rounded-xl font-semibold transition-colors"
+                      disabled={saving}
+                      className="px-6 py-3 border border-amber-300 text-amber-700 hover:bg-amber-50 rounded-xl font-semibold transition-colors disabled:opacity-50"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold transition-colors flex items-center gap-2"
+                      disabled={saving}
+                      className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
-                      <Check className="w-5 h-5" />
-                      {selectedVacante ? "Actualizar Vacante" : "Crear Vacante"}
+                      {saving ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Guardando...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-5 h-5" />
+                          {selectedVacante ? "Actualizar Vacante" : "Crear Vacante"}
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>
