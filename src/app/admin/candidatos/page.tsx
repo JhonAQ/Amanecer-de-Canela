@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -17,23 +17,45 @@ import {
   TrendingUp,
   Users,
   FileText,
+  Loader2,
 } from "lucide-react";
-import { candidatosAdmin, type Candidato } from "@/lib/data-admin";
+import { obtenerCandidatos } from "@/lib/supabase";
+import type { Candidato } from "@/lib/supabase";
 
 export default function CandidatosPage() {
-  const [candidatos] = useState<Candidato[]>(candidatosAdmin);
+  const [candidatos, setCandidatos] = useState<Candidato[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterEstado, setFilterEstado] = useState<string>("Todos");
   const [filterExperiencia, setFilterExperiencia] = useState<string>("Todas");
   const [filterCiudad, setFilterCiudad] = useState<string>("Todas");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  useEffect(() => {
+    cargarCandidatos();
+  }, []);
+
+  const cargarCandidatos = async () => {
+    try {
+      setLoading(true);
+      const data = await obtenerCandidatos();
+      setCandidatos(data);
+    } catch (error) {
+      console.error("Error al cargar candidatos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Filtrado
   const candidatosFiltrados = candidatos.filter((candidato) => {
+    const nombreCompleto = `${candidato.nombre} ${
+      candidato.apellidos || ""
+    }`.toLowerCase();
     const matchSearch =
-      candidato.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      nombreCompleto.includes(searchQuery.toLowerCase()) ||
       candidato.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      candidato.habilidades.some((h) =>
+      candidato.habilidades?.some((h) =>
         h.toLowerCase().includes(searchQuery.toLowerCase())
       );
     const matchEstado =
@@ -54,6 +76,17 @@ export default function CandidatosPage() {
   };
 
   const ciudadesUnicas = Array.from(new Set(candidatos.map((c) => c.ciudad)));
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-amber-600 animate-spin mx-auto mb-4" />
+          <p className="text-amber-700">Cargando candidatos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -126,7 +159,7 @@ export default function CandidatosPage() {
                 Postulaciones
               </p>
               <p className="text-2xl font-bold text-purple-700">
-                {candidatos.reduce((sum, c) => sum + c.postulaciones, 0)}
+                {/* TODO: Calcular desde tabla postulaciones */}0
               </p>
             </div>
           </div>
@@ -223,117 +256,122 @@ export default function CandidatosPage() {
       {/* Candidatos Grid */}
       {viewMode === "grid" ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {candidatosFiltrados.map((candidato, index) => (
-            <motion.div
-              key={candidato.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="bg-white rounded-2xl border border-amber-100 shadow-md hover:shadow-xl transition-all overflow-hidden group"
-            >
-              {/* Header con gradiente */}
-              <div className="bg-gradient-to-br from-amber-600 to-amber-700 p-6 relative">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                    <span className="text-white font-bold text-xl">
-                      {candidato.nombre
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+          {candidatosFiltrados.map((candidato, index) => {
+            const nombreCompleto = `${candidato.nombre} ${
+              candidato.apellidos || ""
+            }`.trim();
+            const iniciales =
+              candidato.nombre?.substring(0, 2).toUpperCase() || "??";
+
+            return (
+              <motion.div
+                key={candidato.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="bg-white rounded-2xl border border-amber-100 shadow-md hover:shadow-xl transition-all overflow-hidden group"
+              >
+                {/* Header con gradiente */}
+                <div className="bg-gradient-to-br from-amber-600 to-amber-700 p-6 relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <span className="text-white font-bold text-xl">
+                        {iniciales}
+                      </span>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                        estadoColors[candidato.estado]
+                      }`}
+                    >
+                      {candidato.estado}
                     </span>
                   </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      estadoColors[candidato.estado]
-                    }`}
-                  >
-                    {candidato.estado}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold text-white mb-1">
-                  {candidato.nombre}
-                </h3>
-                <p className="text-amber-100 text-sm">
-                  {candidato.experiencia} de experiencia
-                </p>
-              </div>
-
-              {/* Body */}
-              <div className="p-6 space-y-4">
-                {/* Contact Info */}
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2 text-amber-700">
-                    <Mail className="w-4 h-4 text-amber-500" />
-                    <span className="truncate">{candidato.email}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-amber-700">
-                    <Phone className="w-4 h-4 text-amber-500" />
-                    <span>{candidato.telefono}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-amber-700">
-                    <MapPin className="w-4 h-4 text-amber-500" />
-                    <span>{candidato.ciudad}</span>
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-amber-100">
-                  <div className="bg-amber-50 rounded-lg p-3 text-center">
-                    <p className="text-xs text-amber-600 font-medium mb-1">
-                      Postulaciones
-                    </p>
-                    <p className="text-xl font-bold text-amber-950">
-                      {candidato.postulaciones}
-                    </p>
-                  </div>
-                  <div className="bg-amber-50 rounded-lg p-3 text-center">
-                    <p className="text-xs text-amber-600 font-medium mb-1">
-                      Última
-                    </p>
-                    <p className="text-sm font-semibold text-amber-950">
-                      {new Date(candidato.ultimaPostulacion).toLocaleDateString(
-                        "es-MX",
-                        { day: "numeric", month: "short" }
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Habilidades */}
-                <div>
-                  <p className="text-xs font-medium text-amber-700 mb-2">
-                    Habilidades:
+                  <h3 className="text-xl font-bold text-white mb-1">
+                    {nombreCompleto || "Sin nombre"}
+                  </h3>
+                  <p className="text-amber-100 text-sm">
+                    {candidato.experiencia} de experiencia
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {candidato.habilidades.slice(0, 3).map((habilidad, i) => (
-                      <span
-                        key={i}
-                        className="px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-xs font-medium"
-                      >
-                        {habilidad}
-                      </span>
-                    ))}
-                    {candidato.habilidades.length > 3 && (
-                      <span className="px-2 py-1 bg-amber-200 text-amber-800 rounded-lg text-xs font-medium">
-                        +{candidato.habilidades.length - 3}
-                      </span>
-                    )}
-                  </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex gap-2 pt-4">
-                  <button className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
-                    <Eye className="w-4 h-4" />
-                    Ver Perfil
-                  </button>
-                  <button className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg font-medium text-sm transition-colors">
-                    <Mail className="w-4 h-4" />
-                  </button>
+                {/* Body */}
+                <div className="p-6 space-y-4">
+                  {/* Contact Info */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2 text-amber-700">
+                      <Mail className="w-4 h-4 text-amber-500" />
+                      <span className="truncate">{candidato.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-amber-700">
+                      <Phone className="w-4 h-4 text-amber-500" />
+                      <span>{candidato.telefono}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-amber-700">
+                      <MapPin className="w-4 h-4 text-amber-500" />
+                      <span>{candidato.ciudad}</span>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-3 pt-4 border-t border-amber-100">
+                    <div className="bg-amber-50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-amber-600 font-medium mb-1">
+                        Registrado
+                      </p>
+                      <p className="text-sm font-semibold text-amber-950">
+                        {new Date(candidato.created_at).toLocaleDateString(
+                          "es-MX",
+                          { day: "numeric", month: "short", year: "numeric" }
+                        )}
+                      </p>
+                    </div>
+                    <div className="bg-amber-50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-amber-600 font-medium mb-1">
+                        Estado
+                      </p>
+                      <p className="text-xs font-semibold text-amber-950">
+                        {candidato.estado}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Habilidades */}
+                  <div>
+                    <p className="text-xs font-medium text-amber-700 mb-2">
+                      Habilidades:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {candidato.habilidades.slice(0, 3).map((habilidad, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-xs font-medium"
+                        >
+                          {habilidad}
+                        </span>
+                      ))}
+                      {candidato.habilidades.length > 3 && (
+                        <span className="px-2 py-1 bg-amber-200 text-amber-800 rounded-lg text-xs font-medium">
+                          +{candidato.habilidades.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-4">
+                    <button className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
+                      <Eye className="w-4 h-4" />
+                      Ver Perfil
+                    </button>
+                    <button className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg font-medium text-sm transition-colors">
+                      <Mail className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       ) : (
         /* Lista View */
@@ -363,66 +401,71 @@ export default function CandidatosPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-amber-100">
-                {candidatosFiltrados.map((candidato, index) => (
-                  <motion.tr
-                    key={candidato.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.02 }}
-                    className="hover:bg-amber-50/50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-xs">
-                            {candidato.nombre
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </span>
+                {candidatosFiltrados.map((candidato, index) => {
+                  const nombreCompleto = `${candidato.nombre} ${
+                    candidato.apellidos || ""
+                  }`.trim();
+                  const iniciales =
+                    candidato.nombre?.substring(0, 2).toUpperCase() || "??";
+
+                  return (
+                    <motion.tr
+                      key={candidato.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: index * 0.02 }}
+                      className="hover:bg-amber-50/50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-bold text-xs">
+                              {iniciales}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-amber-950">
+                              {nombreCompleto || "Sin nombre"}
+                            </p>
+                            <p className="text-xs text-amber-600">
+                              {candidato.email}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-amber-950">
-                            {candidato.nombre}
-                          </p>
-                          <p className="text-xs text-amber-600">
-                            {candidato.email}
-                          </p>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-amber-700">
+                        {candidato.experiencia}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-amber-700">
+                        {candidato.ciudad}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                          {/* TODO: Calcular desde postulaciones */}0
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                            estadoColors[candidato.estado]
+                          }`}
+                        >
+                          {candidato.estado}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button className="p-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg transition-colors">
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button className="p-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg transition-colors">
+                            <Mail className="w-4 h-4" />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-amber-700">
-                      {candidato.experiencia}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-amber-700">
-                      {candidato.ciudad}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                        {candidato.postulaciones}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                          estadoColors[candidato.estado]
-                        }`}
-                      >
-                        {candidato.estado}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button className="p-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg transition-colors">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg transition-colors">
-                          <Mail className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

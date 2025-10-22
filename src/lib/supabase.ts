@@ -80,6 +80,7 @@ export interface PostulacionCompleta extends Postulacion {
   vacante_titulo: string;
   vacante_ubicacion: string;
   vacante_slug: string;
+  fecha_postulacion: string; // Campo de la vista
 }
 
 export interface Administrador {
@@ -219,7 +220,7 @@ export async function obtenerCandidatos(filtros?: {
   busqueda?: string;
 }) {
   let query = supabase
-    .from('estadisticas_candidatos')
+    .from('candidatos')
     .select('*')
     .order('created_at', { ascending: false });
 
@@ -236,7 +237,7 @@ export async function obtenerCandidatos(filtros?: {
   }
 
   if (filtros?.busqueda) {
-    query = query.or(`nombre.ilike.%${filtros.busqueda}%,email.ilike.%${filtros.busqueda}%`);
+    query = query.or(`nombre.ilike.%${filtros.busqueda}%,apellidos.ilike.%${filtros.busqueda}%,email.ilike.%${filtros.busqueda}%`);
   }
 
   const { data, error } = await query;
@@ -246,7 +247,7 @@ export async function obtenerCandidatos(filtros?: {
     throw error;
   }
 
-  return data;
+  return data as Candidato[];
 }
 
 export async function obtenerCandidatoPorId(id: string) {
