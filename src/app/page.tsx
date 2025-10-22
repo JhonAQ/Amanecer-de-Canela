@@ -48,7 +48,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-amber-50/50 to-white">
       {/* Header/Navbar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -159,10 +159,10 @@ export default function Home() {
               className="relative"
             >
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                <div className="aspect-square bg-gradient-to-br from-amber-200 via-orange-200 to-amber-300 flex items-center justify-center">
+                <div className="aspect-square bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-200 flex items-center justify-center">
                   <div className="text-center p-8">
                     <Image 
-                      src="/logo.png"
+                      src="/nuestro-equipo.png"
                       alt="Nuestro equipo"
                       layout="fill"
                       objectFit="cover"
@@ -205,7 +205,7 @@ export default function Home() {
 
         {/* Decorative elements */}
         <div className="absolute top-20 right-10 w-72 h-72 bg-amber-200 rounded-full blur-3xl opacity-20"></div>
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-orange-200 rounded-full blur-3xl opacity-20"></div>
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-amber-300 rounded-full blur-3xl opacity-20"></div>
       </section>
 
       {/* Benefits Section */}
@@ -237,7 +237,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ y: -5 }}
-                  className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100 hover:shadow-xl transition-all"
+                  className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 border border-amber-100 hover:shadow-xl transition-all"
                 >
                   <div className="w-12 h-12 bg-amber-600 rounded-xl flex items-center justify-center mb-4">
                     <Icon className="w-6 h-6 text-white" />
@@ -254,7 +254,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600">
+      <section className="py-20 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
