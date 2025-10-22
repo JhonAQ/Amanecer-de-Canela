@@ -461,7 +461,7 @@ export async function eliminarEtiquetaPostulacion(id: string, etiqueta: string) 
 
   if (!postulacion) throw new Error('Postulación no encontrada');
 
-  const etiquetasActualizadas = (postulacion.etiquetas || []).filter(e => e !== etiqueta);
+  const etiquetasActualizadas = (postulacion.etiquetas || []).filter((e: string) => e !== etiqueta);
 
   return actualizarPostulacion(id, { etiquetas: etiquetasActualizadas });
 }
@@ -476,15 +476,15 @@ export async function obtenerEstadisticasDashboard() {
     .from('vacantes')
     .select('estado, id');
 
-  const vacantesActivas = vacantes?.filter(v => v.estado === 'Activa').length || 0;
+  const vacantesActivas = vacantes?.filter((v: { estado: string; id: string }) => v.estado === 'Activa').length || 0;
 
   // Obtener conteos de postulaciones
   const { data: estadosPostulaciones } = await supabase
     .rpc('contar_postulaciones_por_estado');
 
-  const postulacionesNuevas = estadosPostulaciones?.find(e => e.estado === 'Nueva')?.total || 0;
-  const enRevision = estadosPostulaciones?.find(e => e.estado === 'En revisión')?.total || 0;
-  const enEntrevista = estadosPostulaciones?.find(e => e.estado === 'Entrevista')?.total || 0;
+  const postulacionesNuevas = estadosPostulaciones?.find((e: { estado: string; total: number }) => e.estado === 'Nueva')?.total || 0;
+  const enRevision = estadosPostulaciones?.find((e: { estado: string; total: number }) => e.estado === 'En revisión')?.total || 0;
+  const enEntrevista = estadosPostulaciones?.find((e: { estado: string; total: number }) => e.estado === 'Entrevista')?.total || 0;
 
   // Obtener total de candidatos
   const { count: totalCandidatos } = await supabase
