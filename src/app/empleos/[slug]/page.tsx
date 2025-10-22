@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { use } from "react";
-import { 
-  MapPin, 
-  Clock, 
-  Briefcase, 
+import {
+  MapPin,
+  Clock,
+  Briefcase,
   DollarSign,
   ChevronRight,
   ArrowLeft,
@@ -15,7 +15,7 @@ import {
   Users,
   Calendar,
   GraduationCap,
-  Target
+  Target,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -29,15 +29,17 @@ const vacantesData = {
     tipo: "Tiempo Completo",
     categoria: "Producción",
     salario: "$15,000 - $20,000 MXN",
-    descripcionCorta: "Buscamos un maestro panadero con experiencia en elaboración de pan artesanal y productos de panadería tradicional.",
-    descripcion: "Estamos buscando un Maestro Panadero apasionado y con experiencia para unirse a nuestro equipo en la Sucursal Centro. Serás responsable de la elaboración de pan artesanal de alta calidad, siguiendo nuestras recetas tradicionales y manteniendo los estándares de excelencia que nos caracterizan.",
+    descripcionCorta:
+      "Buscamos un maestro panadero con experiencia en elaboración de pan artesanal y productos de panadería tradicional.",
+    descripcion:
+      "Estamos buscando un Maestro Panadero apasionado y con experiencia para unirse a nuestro equipo en la Sucursal Centro. Serás responsable de la elaboración de pan artesanal de alta calidad, siguiendo nuestras recetas tradicionales y manteniendo los estándares de excelencia que nos caracterizan.",
     responsabilidades: [
       "Elaborar pan artesanal y productos de panadería siguiendo recetas establecidas",
       "Supervisar y controlar la calidad de los productos horneados",
       "Mantener la limpieza y organización del área de producción",
       "Capacitar y guiar a ayudantes de panadería",
       "Gestionar inventario de ingredientes y reportar necesidades",
-      "Cumplir con normas de higiene y seguridad alimentaria"
+      "Cumplir con normas de higiene y seguridad alimentaria",
     ],
     requisitos: [
       "Mínimo 3 años de experiencia como panadero",
@@ -45,7 +47,7 @@ const vacantesData = {
       "Disponibilidad de horario (madrugada)",
       "Conocimientos de normas de higiene y seguridad alimentaria",
       "Habilidad para trabajar en equipo",
-      "Certificado de manejo de alimentos (deseable)"
+      "Certificado de manejo de alimentos (deseable)",
     ],
     ofrecemos: [
       "Salario competitivo de $15,000 - $20,000 MXN",
@@ -53,11 +55,11 @@ const vacantesData = {
       "Capacitación continua",
       "Descuentos en productos",
       "Ambiente familiar y de crecimiento",
-      "Oportunidad de desarrollo profesional"
+      "Oportunidad de desarrollo profesional",
     ],
     horario: "Lunes a Sábado, 4:00 AM - 12:00 PM",
     fechaPublicacion: "15 de Octubre, 2025",
-    vacantes: 2
+    vacantes: 2,
   },
   "cajero-sucursal": {
     id: 2,
@@ -67,15 +69,17 @@ const vacantesData = {
     tipo: "Tiempo Completo",
     categoria: "Ventas",
     salario: "$10,000 - $12,000 MXN",
-    descripcionCorta: "Buscamos personas con actitud de servicio para atención al cliente y manejo de caja en nuestras sucursales.",
-    descripcion: "Buscamos personas dinámicas, responsables y con excelente actitud de servicio para el puesto de Cajero/a. Serás la primera imagen de nuestra empresa ante los clientes, brindando una experiencia de compra excepcional.",
+    descripcionCorta:
+      "Buscamos personas con actitud de servicio para atención al cliente y manejo de caja en nuestras sucursales.",
+    descripcion:
+      "Buscamos personas dinámicas, responsables y con excelente actitud de servicio para el puesto de Cajero/a. Serás la primera imagen de nuestra empresa ante los clientes, brindando una experiencia de compra excepcional.",
     responsabilidades: [
       "Atender a clientes con amabilidad y profesionalismo",
       "Realizar cobros y manejo de efectivo y tarjetas",
       "Mantener el área de caja limpia y ordenada",
       "Apoyar en el acomodo y exhibición de productos",
       "Realizar cortes de caja y arqueos",
-      "Resolver dudas y quejas de clientes"
+      "Resolver dudas y quejas de clientes",
     ],
     requisitos: [
       "Educación secundaria o preparatoria",
@@ -83,7 +87,7 @@ const vacantesData = {
       "Habilidad para manejo de efectivo",
       "Excelente presentación",
       "Actitud de servicio y amabilidad",
-      "Disponibilidad de horario"
+      "Disponibilidad de horario",
     ],
     ofrecemos: [
       "Salario de $10,000 - $12,000 MXN",
@@ -91,12 +95,12 @@ const vacantesData = {
       "Capacitación inicial",
       "Descuentos en productos",
       "Buen ambiente laboral",
-      "Oportunidades de crecimiento"
+      "Oportunidades de crecimiento",
     ],
     horario: "Rolado (matutino, vespertino y mixto)",
     fechaPublicacion: "18 de Octubre, 2025",
-    vacantes: 5
-  }
+    vacantes: 5,
+  },
   // Agregar más vacantes según necesites
 };
 
@@ -117,7 +121,10 @@ export default function DetalleVacantePage({ params }: PageProps) {
       {/* Header/Navbar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
             <Image
               src="/logo.png"
               alt="Amanecer de Canela"
@@ -127,12 +134,14 @@ export default function DetalleVacantePage({ params }: PageProps) {
               priority
             />
             <div>
-              <h1 className="text-xl font-bold text-amber-900">Amanecer de Canela</h1>
+              <h1 className="text-xl font-bold text-amber-900">
+                Amanecer de Canela
+              </h1>
               <p className="text-xs text-amber-700">Únete a nuestro equipo</p>
             </div>
           </Link>
-          
-          <Link 
+
+          <Link
             href="/empleos"
             className="flex items-center gap-2 text-amber-700 hover:text-amber-900 font-medium transition-colors"
           >
@@ -145,9 +154,13 @@ export default function DetalleVacantePage({ params }: PageProps) {
       {/* Breadcrumb */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center gap-2 text-sm text-amber-700">
-          <Link href="/" className="hover:text-amber-900">Inicio</Link>
+          <Link href="/" className="hover:text-amber-900">
+            Inicio
+          </Link>
           <ChevronRight className="w-4 h-4" />
-          <Link href="/empleos" className="hover:text-amber-900">Vacantes</Link>
+          <Link href="/empleos" className="hover:text-amber-900">
+            Vacantes
+          </Link>
           <ChevronRight className="w-4 h-4" />
           <span className="text-amber-900 font-medium">{vacante.titulo}</span>
         </div>
@@ -189,8 +202,12 @@ export default function DetalleVacantePage({ params }: PageProps) {
               <div className="flex items-center gap-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
                 <DollarSign className="w-8 h-8 text-amber-600" />
                 <div>
-                  <p className="text-sm text-amber-700 font-medium">Salario mensual</p>
-                  <p className="text-2xl font-bold text-amber-900">{vacante.salario}</p>
+                  <p className="text-sm text-amber-700 font-medium">
+                    Salario mensual
+                  </p>
+                  <p className="text-2xl font-bold text-amber-900">
+                    {vacante.salario}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -308,22 +325,33 @@ export default function DetalleVacantePage({ params }: PageProps) {
                   <div className="flex items-start gap-3">
                     <Clock className="w-5 h-5 text-amber-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-amber-600 font-medium">Horario</p>
+                      <p className="text-sm text-amber-600 font-medium">
+                        Horario
+                      </p>
                       <p className="text-amber-900">{vacante.horario}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Users className="w-5 h-5 text-amber-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-amber-600 font-medium">Vacantes</p>
-                      <p className="text-amber-900">{vacante.vacantes} posición{vacante.vacantes > 1 ? 'es' : ''}</p>
+                      <p className="text-sm text-amber-600 font-medium">
+                        Vacantes
+                      </p>
+                      <p className="text-amber-900">
+                        {vacante.vacantes} posición
+                        {vacante.vacantes > 1 ? "es" : ""}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Calendar className="w-5 h-5 text-amber-600 mt-0.5" />
                     <div>
-                      <p className="text-sm text-amber-600 font-medium">Publicada</p>
-                      <p className="text-amber-900">{vacante.fechaPublicacion}</p>
+                      <p className="text-sm text-amber-600 font-medium">
+                        Publicada
+                      </p>
+                      <p className="text-amber-900">
+                        {vacante.fechaPublicacion}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -335,7 +363,8 @@ export default function DetalleVacantePage({ params }: PageProps) {
                   Comparte esta vacante
                 </h3>
                 <p className="text-sm text-amber-700">
-                  ¿Conoces a alguien perfecto para este puesto? Comparte esta oportunidad.
+                  ¿Conoces a alguien perfecto para este puesto? Comparte esta
+                  oportunidad.
                 </p>
               </div>
             </motion.div>
@@ -362,24 +391,39 @@ export default function DetalleVacantePage({ params }: PageProps) {
                 Endulzando vidas desde hace más de 25 años
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Enlaces Rápidos</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/" className="text-amber-300/80 hover:text-amber-200">Inicio</Link></li>
-                <li><Link href="/empleos" className="text-amber-300/80 hover:text-amber-200">Vacantes</Link></li>
+                <li>
+                  <Link
+                    href="/"
+                    className="text-amber-300/80 hover:text-amber-200"
+                  >
+                    Inicio
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/empleos"
+                    className="text-amber-300/80 hover:text-amber-200"
+                  >
+                    Vacantes
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <p className="text-amber-300/80 text-sm">
-                ¿Preguntas sobre las vacantes?<br />
+                ¿Preguntas sobre las vacantes?
+                <br />
                 Escríbenos a: reclutamiento@amanecerdecanela.com
               </p>
             </div>
           </div>
-          
+
           <div className="border-t border-amber-800 pt-8 text-center text-sm text-amber-300/60">
             <p>© 2025 Amanecer de Canela. Todos los derechos reservados.</p>
           </div>

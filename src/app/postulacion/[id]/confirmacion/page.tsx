@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { use } from "react";
-import { 
+import {
   CheckCircle,
   Mail,
   Clock,
@@ -13,7 +13,7 @@ import {
   Briefcase,
   ArrowRight,
   Calendar,
-  Bell
+  Bell,
 } from "lucide-react";
 
 interface PageProps {
@@ -27,42 +27,46 @@ export default function ConfirmacionPage({ params }: PageProps) {
   const postulacion = {
     id: id,
     vacante: "Maestro Panadero",
-    fecha: new Date().toLocaleDateString('es-MX', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    fecha: new Date().toLocaleDateString("es-MX", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     }),
-    hora: new Date().toLocaleTimeString('es-MX', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    })
+    hora: new Date().toLocaleTimeString("es-MX", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
   };
 
   const siguientesPasos = [
     {
       icon: Mail,
       titulo: "Revisa tu email",
-      descripcion: "Te hemos enviado un correo de confirmación con los detalles de tu postulación.",
-      tiempo: "Inmediato"
+      descripcion:
+        "Te hemos enviado un correo de confirmación con los detalles de tu postulación.",
+      tiempo: "Inmediato",
     },
     {
       icon: FileText,
       titulo: "Revisión de CV",
-      descripcion: "Nuestro equipo de reclutamiento revisará tu perfil y experiencia.",
-      tiempo: "1-3 días hábiles"
+      descripcion:
+        "Nuestro equipo de reclutamiento revisará tu perfil y experiencia.",
+      tiempo: "1-3 días hábiles",
     },
     {
       icon: Bell,
       titulo: "Contacto inicial",
-      descripcion: "Si tu perfil es seleccionado, te contactaremos por teléfono o email.",
-      tiempo: "3-5 días hábiles"
+      descripcion:
+        "Si tu perfil es seleccionado, te contactaremos por teléfono o email.",
+      tiempo: "3-5 días hábiles",
     },
     {
       icon: Calendar,
       titulo: "Entrevista",
-      descripcion: "Coordinaremos una entrevista para conocerte mejor y hablar sobre la vacante.",
-      tiempo: "1-2 semanas"
-    }
+      descripcion:
+        "Coordinaremos una entrevista para conocerte mejor y hablar sobre la vacante.",
+      tiempo: "1-2 semanas",
+    },
   ];
 
   return (
@@ -70,7 +74,10 @@ export default function ConfirmacionPage({ params }: PageProps) {
       {/* Header/Navbar */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
             <Image
               src="/logo.png"
               alt="Amanecer de Canela"
@@ -80,12 +87,14 @@ export default function ConfirmacionPage({ params }: PageProps) {
               priority
             />
             <div>
-              <h1 className="text-xl font-bold text-amber-900">Amanecer de Canela</h1>
+              <h1 className="text-xl font-bold text-amber-900">
+                Amanecer de Canela
+              </h1>
               <p className="text-xs text-amber-700">Únete a nuestro equipo</p>
             </div>
           </Link>
-          
-          <Link 
+
+          <Link
             href="/"
             className="flex items-center gap-2 text-amber-700 hover:text-amber-900 font-medium transition-colors"
           >
@@ -130,13 +139,20 @@ export default function ConfirmacionPage({ params }: PageProps) {
             ¡Postulación enviada con éxito!
           </h1>
           <p className="text-lg text-amber-700 mb-6">
-            Hemos recibido tu solicitud para la vacante de <span className="font-semibold text-amber-900">{postulacion.vacante}</span>
+            Hemos recibido tu solicitud para la vacante de{" "}
+            <span className="font-semibold text-amber-900">
+              {postulacion.vacante}
+            </span>
           </p>
-          
+
           {/* Reference Number */}
           <div className="inline-block bg-white rounded-xl p-4 shadow-md border border-amber-200">
-            <p className="text-sm text-amber-600 font-medium mb-1">Número de referencia</p>
-            <p className="text-2xl font-bold text-amber-900 font-mono">#{postulacion.id.toUpperCase()}</p>
+            <p className="text-sm text-amber-600 font-medium mb-1">
+              Número de referencia
+            </p>
+            <p className="text-2xl font-bold text-amber-900 font-mono">
+              #{postulacion.id.toUpperCase()}
+            </p>
           </div>
         </motion.div>
 
@@ -151,15 +167,23 @@ export default function ConfirmacionPage({ params }: PageProps) {
             <Clock className="w-5 h-5 text-amber-600" />
             Detalles de tu postulación
           </h2>
-          
+
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-              <p className="text-sm text-amber-600 font-medium mb-1">Fecha de postulación</p>
-              <p className="text-lg font-semibold text-amber-900">{postulacion.fecha}</p>
+              <p className="text-sm text-amber-600 font-medium mb-1">
+                Fecha de postulación
+              </p>
+              <p className="text-lg font-semibold text-amber-900">
+                {postulacion.fecha}
+              </p>
             </div>
             <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-              <p className="text-sm text-amber-600 font-medium mb-1">Hora de registro</p>
-              <p className="text-lg font-semibold text-amber-900">{postulacion.hora}</p>
+              <p className="text-sm text-amber-600 font-medium mb-1">
+                Hora de registro
+              </p>
+              <p className="text-lg font-semibold text-amber-900">
+                {postulacion.hora}
+              </p>
             </div>
           </div>
         </motion.div>
@@ -174,7 +198,7 @@ export default function ConfirmacionPage({ params }: PageProps) {
           <h2 className="text-2xl font-bold text-amber-950 mb-6 text-center">
             ¿Qué sigue ahora?
           </h2>
-          
+
           <div className="space-y-6">
             {siguientesPasos.map((paso, index) => {
               const Icon = paso.icon;
@@ -204,9 +228,7 @@ export default function ConfirmacionPage({ params }: PageProps) {
                           {paso.tiempo}
                         </span>
                       </div>
-                      <p className="text-amber-700">
-                        {paso.descripcion}
-                      </p>
+                      <p className="text-amber-700">{paso.descripcion}</p>
                     </div>
                   </div>
 
@@ -234,15 +256,23 @@ export default function ConfirmacionPage({ params }: PageProps) {
           <ul className="space-y-2 text-amber-800">
             <li className="flex items-start gap-2">
               <span className="text-amber-600 mt-1">•</span>
-              <span>Revisa tu bandeja de entrada y spam para no perder ninguna comunicación</span>
+              <span>
+                Revisa tu bandeja de entrada y spam para no perder ninguna
+                comunicación
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-amber-600 mt-1">•</span>
-              <span>Mantén tu teléfono disponible durante los próximos días</span>
+              <span>
+                Mantén tu teléfono disponible durante los próximos días
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-amber-600 mt-1">•</span>
-              <span>Si tienes dudas, contáctanos a reclutamiento@amanecerdecanela.com</span>
+              <span>
+                Si tienes dudas, contáctanos a
+                reclutamiento@amanecerdecanela.com
+              </span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-amber-600 mt-1">•</span>
@@ -282,7 +312,7 @@ export default function ConfirmacionPage({ params }: PageProps) {
           className="mt-12 text-center"
         >
           <p className="text-lg text-amber-800">
-            Gracias por tu interés en formar parte de{' '}
+            Gracias por tu interés en formar parte de{" "}
             <span className="font-bold text-amber-900">Amanecer de Canela</span>
           </p>
           <p className="text-amber-700 mt-2">
@@ -310,24 +340,39 @@ export default function ConfirmacionPage({ params }: PageProps) {
                 Endulzando vidas desde hace más de 25 años
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Enlaces Rápidos</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/" className="text-amber-300/80 hover:text-amber-200">Inicio</Link></li>
-                <li><Link href="/empleos" className="text-amber-300/80 hover:text-amber-200">Vacantes</Link></li>
+                <li>
+                  <Link
+                    href="/"
+                    className="text-amber-300/80 hover:text-amber-200"
+                  >
+                    Inicio
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/empleos"
+                    className="text-amber-300/80 hover:text-amber-200"
+                  >
+                    Vacantes
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <p className="text-amber-300/80 text-sm">
-                ¿Preguntas sobre las vacantes?<br />
+                ¿Preguntas sobre las vacantes?
+                <br />
                 Escríbenos a: reclutamiento@amanecerdecanela.com
               </p>
             </div>
           </div>
-          
+
           <div className="border-t border-amber-800 pt-8 text-center text-sm text-amber-300/60">
             <p>© 2025 Amanecer de Canela. Todos los derechos reservados.</p>
           </div>
